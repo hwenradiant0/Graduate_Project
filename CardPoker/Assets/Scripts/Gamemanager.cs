@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class Gamemanager : MonoBehaviour
 {
-    enum Day
-    {
-        Monday = 0,
-        ThuseDay
-    }
-
-
     [SerializeField]
     private GameObject[] X_Cubes = null;
     [SerializeField]
@@ -24,18 +17,12 @@ public class Gamemanager : MonoBehaviour
     int n_Cube = 0;
     //[SerializeField]
     //private Transform[] Pos_Zcubes = null;
-
+    
     float a = 0;
     int n_xCube = 0;
     int n_zCube = 0;
 
-    int x = 0;
-    int z = 0;
-    int shuffle = 0;
-
-    int[] X_Deck = null;
-    int[] Z_Deck = null;
-    int tmp = 0;
+    int k = 0;
 
     public bool X_Change, Z_Change;
 
@@ -45,33 +32,7 @@ public class Gamemanager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        X_Deck = new int[10];
-        Z_Deck = new int[10];
-        for (int i = 0; i < 10; i++)
-        {
-            X_Deck[i] = i;
-            Z_Deck[i] = i;
-        }
-
-        for (int i = 10; i > 0; i--)
-        {
-            shuffle = Random.Range(0, i);
-            tmp = X_Deck[i - 1];
-            X_Deck[i - 1] = X_Deck[shuffle];
-            X_Deck[shuffle] = tmp;
-        }
-
-        tmp = 0;
-
-        for (int i = 10; i > 0; i--)
-        {
-            shuffle = Random.Range(0, i);
-            tmp = Z_Deck[i - 1];
-            Z_Deck[i - 1] = Z_Deck[shuffle];
-            Z_Deck[shuffle] = tmp;
-        }
-
-        f_state = true;
+        f_state = false;
         state = false;
         X_Change = false;
         Z_Change = false;
@@ -80,13 +41,10 @@ public class Gamemanager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (f_state == true)
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                f_state = false;
-                state = true;
-            }
+            f_state = true;
+            state = true;
         }
         else
         {
@@ -98,8 +56,9 @@ public class Gamemanager : MonoBehaviour
                     {
                         if (n_Cube < 20)
                         {
-                            x = X_Deck[n_xCube];
-                            C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
+                            k = Random.Range(0, 10);
+                            C[n_Cube] = GameObject.Instantiate(X_Cubes[k]);
+                            Debug.Log(k);
                             Pos_cubes[n_Cube] = C[n_Cube].transform;
                             if (n_Cube == 0)
                                 Pos_cubes[n_Cube].localPosition = new Vector3(0, 0, 0);
@@ -128,9 +87,9 @@ public class Gamemanager : MonoBehaviour
                     {
                         if (n_Cube < 20)
                         {
-                            z = Z_Deck[n_zCube];
-                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
+                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[n_zCube]);
                             Pos_cubes[n_Cube] = C[n_Cube].transform;
+
                             if (n_Cube == 0)
                                 Pos_cubes[n_Cube].localPosition = new Vector3(0, 0, 0);
                             else
@@ -158,8 +117,9 @@ public class Gamemanager : MonoBehaviour
                     {
                         if (n_Cube < 20)
                         {
-                            x = X_Deck[n_xCube];
-                            C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
+                            k = Random.Range(0, 10);
+                            C[n_Cube] = GameObject.Instantiate(X_Cubes[k]);
+                            Debug.Log(k);
                             Pos_cubes[n_Cube] = C[n_Cube].transform;
                             if (n_Cube == 0)
                                 Pos_cubes[n_Cube].localPosition = new Vector3(0, 0, 0);
@@ -188,9 +148,9 @@ public class Gamemanager : MonoBehaviour
                     {
                         if (n_Cube < 20)
                         {
-                            z = Z_Deck[n_zCube];
-                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
+                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[n_zCube]);
                             Pos_cubes[n_Cube] = C[n_Cube].transform;
+
                             if (n_Cube == 0)
                                 Pos_cubes[n_Cube].localPosition = new Vector3(0, 0, 0);
                             else
@@ -217,8 +177,8 @@ public class Gamemanager : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    if (f_state == false)
-                        state = true;
+                    if(f_state == true)
+                       state = true;
                 }
             }
         }
