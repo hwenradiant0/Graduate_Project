@@ -9,10 +9,14 @@ public class Cube2 : MonoBehaviour {
     Vector3 temp;
     int a = 0;
 
+    public Color[] color;
+    Material m_Material;
+
     // Use this for initialization
     void Start()
     {
         gamemanager = GameObject.Find("GameManager").GetComponent<Gamemanager>();
+        m_Material = GetComponent<Renderer>().material;
     }
 
     // Update is called once per frame
@@ -20,6 +24,7 @@ public class Cube2 : MonoBehaviour {
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
+
         if (temp.z >= 2.5f)
         {
             a = 1;
@@ -49,6 +54,23 @@ public class Cube2 : MonoBehaviour {
             {
 
             }
+        }
+
+        if (a != 2) // 큐브가 움직일때
+        {
+            if (gamemanager.Z_Change == true)
+            {
+                m_Material.color = color[0];
+            }
+            else
+            {
+                m_Material.color = color[1];
+            }
+        }
+
+        else // 큐브가 멈췄을 때
+        {
+            m_Material.color = color[2];
         }
 
         transform.localPosition = temp;
