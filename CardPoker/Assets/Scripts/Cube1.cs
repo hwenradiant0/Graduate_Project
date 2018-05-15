@@ -18,12 +18,18 @@ public class Cube1 : MonoBehaviour {
         gamemanager = GameObject.Find("GameManager").GetComponent<Gamemanager>();
         m_Material = GetComponent<Renderer>().material;
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
+        
 
         if (temp.x >= 2.5f)
         {
@@ -40,7 +46,7 @@ public class Cube1 : MonoBehaviour {
                 temp.x = temp.x + 1*Time.deltaTime;
                 break;
             case 1:
-                temp.x = temp.x - 1*Time.deltaTime;
+                temp.x = temp.x - 1 * Time.deltaTime;
                 break;
         }
 
@@ -49,10 +55,6 @@ public class Cube1 : MonoBehaviour {
             if (gamemanager.X_Change == true) // 큐브가 만날때
             {
                 a = 2;
-            }
-            else
-            {
-
             }
         }
 
@@ -69,6 +71,7 @@ public class Cube1 : MonoBehaviour {
         }
         else // 큐브가 멈췄을때
         {
+            GetComponent<Rigidbody>().isKinematic = false;
             m_Material.color = color[2];
         }
 

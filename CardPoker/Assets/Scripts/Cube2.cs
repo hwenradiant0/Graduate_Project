@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cube2 : MonoBehaviour {
+public class Cube2 : MonoBehaviour
+{
 
     Gamemanager gamemanager;
 
@@ -19,11 +20,17 @@ public class Cube2 : MonoBehaviour {
         m_Material = GetComponent<Renderer>().material;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
+
 
         if (temp.z >= 2.5f)
         {
@@ -37,22 +44,18 @@ public class Cube2 : MonoBehaviour {
         switch (a)
         {
             case 0:
-                temp.z = temp.z + 2*Time.deltaTime;
+                temp.z = temp.z + 1 * Time.deltaTime;
                 break;
             case 1:
-                temp.z = temp.z - 2*Time.deltaTime;
+                temp.z = temp.z - 1 * Time.deltaTime;
                 break;
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (gamemanager.Z_Change == true)
+            if (gamemanager.Z_Change == true) // 큐브가 만날때
             {
                 a = 2;
-            }
-            else
-            {
-
             }
         }
 
@@ -67,12 +70,12 @@ public class Cube2 : MonoBehaviour {
                 m_Material.color = color[1];
             }
         }
-
-        else // 큐브가 멈췄을 때
+        else // 큐브가 멈췄을때
         {
+            GetComponent<Rigidbody>().isKinematic = false;
             m_Material.color = color[2];
         }
 
         transform.localPosition = temp;
-	}
+    }
 }
