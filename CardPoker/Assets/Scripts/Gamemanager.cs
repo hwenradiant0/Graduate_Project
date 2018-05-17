@@ -27,6 +27,8 @@ public class Gamemanager : MonoBehaviour
     public int z = 0;
     int shuffle = 0;
 
+    public int count_card = 0;
+
     public int[] X_Deck = null;
     public int[] Z_Deck = null;
 
@@ -43,20 +45,14 @@ public class Gamemanager : MonoBehaviour
     bool state;
     bool Q_state, W_state, E_state, R_state;
 
-    int q,w,e,r=0;
+    public bool X_state, Z_state;
 
-    // Use this for initialization
-    void Start()
+    //bool test;
+
+    int q, w, e, r = 0;
+
+    void Shuffle()
     {
-        X_Deck = new int[10];
-        Z_Deck = new int[10];
-
-        Q_Deck = new int[6];
-        W_Deck = new int[6];
-        E_Deck = new int[6];
-        R_Deck = new int[6];
-
-
         for (int i = 0; i < 10; i++)
         {
             X_Deck[i] = i;
@@ -108,6 +104,18 @@ public class Gamemanager : MonoBehaviour
                 r++;
             }
         }
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        X_Deck = new int[10];
+        Z_Deck = new int[10];
+
+        Q_Deck = new int[6];
+        W_Deck = new int[6];
+        E_Deck = new int[6];
+        R_Deck = new int[6];
 
         Q_Deck[5] = -1;
         W_Deck[5] = -1;
@@ -124,6 +132,13 @@ public class Gamemanager : MonoBehaviour
 
         X_Change = false;
         Z_Change = false;
+
+        X_state = false;
+        Z_state = false;
+
+        Shuffle();
+
+        //test = true;
     }
 
     // Update is called once per frame
@@ -154,6 +169,32 @@ public class Gamemanager : MonoBehaviour
             Debug.Log(R_Deck[i]);
         }
         */
+        /*
+        if (X_state == true)                            // X큐브가 움직일때
+        {
+            if (X_Change == true)                       // X큐브가 서로 만날때
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    X_state = false;
+                }
+            }
+        }
+
+        if (Z_state == true)
+        {
+            if (Z_Change == true)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    count_card++;
+                    Z_state = false;
+                    Debug.Log("z : " + count_card);
+                    Debug.Log("z : " + Z_state);
+                }
+            }
+        }*/
+
 
         if (f_state == true)
         {
@@ -163,6 +204,7 @@ public class Gamemanager : MonoBehaviour
                 state = true;
             }
         }
+
         else
         {
             if (state)
@@ -196,6 +238,10 @@ public class Gamemanager : MonoBehaviour
                         }
                     }
                     Q_state = true;
+
+                    X_state = true;
+                    Z_state = false;
+                    
                 }
 
                 else if (Input.GetKeyDown(KeyCode.W))
@@ -228,6 +274,10 @@ public class Gamemanager : MonoBehaviour
 
                     }
                     W_state = true;
+
+                    X_state = false;
+                    Z_state = true;
+                    
                 }
 
                 else if (Input.GetKeyDown(KeyCode.E))
@@ -260,6 +310,9 @@ public class Gamemanager : MonoBehaviour
 
                     }
                     E_state = true;
+
+                    X_state = true;
+                    Z_state = false;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.R))
@@ -292,6 +345,21 @@ public class Gamemanager : MonoBehaviour
 
                     }
                     R_state = true;
+
+                    X_state = false;
+                    Z_state = true;
+                }
+
+                if (n_Cube >= 5)
+                {
+                    if (Input.GetKeyDown(KeyCode.K))
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            Destroy(C[i]);
+                        }
+                        n_Cube = 0;
+                    }
                 }
             }
 
@@ -301,68 +369,104 @@ public class Gamemanager : MonoBehaviour
                 {
                     if (f_state == false)
                     {
-                        if (num_q > 4)
+                        if (Q_state)
                         {
-                            num_q = 5;
-                        }
-
-                        if (num_w > 4)
-                        {
-                            num_w = 5;
-                        }
-
-                        if (num_e > 4)
-                        {
-                            num_e = 5;
-                        }
-
-                        if (num_r > 4)
-                        {
-                            num_r = 5;
-                        }
-
-                        if (Q_state == true)
-                        {
-                            if (num_q < 5)
+                            if (X_Change)
                             {
-                                num_q++;
+                                if (num_q < 5)
+                                {
+                                    count_card++;
+                                    Debug.Log("x : " + count_card);
+                                    Debug.Log("x : " + X_state);
+                                    Q_state = false;
+                                    X_Change = false;
+                                    num_q++;
+                                    state = true;
+                                }
                             }
-                            Q_state = false;
-                            Debug.Log(num_q);
                         }
 
-                        else if (W_state == true)
+                        else if (W_state)
                         {
-                            if (num_w < 5)
+                            if (Z_Change)
                             {
-                                num_w++;
+                                if (num_w < 5)
+                                {
+                                    count_card++;
+                                    Debug.Log("z : " + count_card);
+                                    Debug.Log("z : " + Z_state);
+                                    W_state = false;
+                                    Z_Change = false;
+                                    num_w++;
+                                    state = true;
+                                }
                             }
-                            W_state = false;
-                            Debug.Log(num_w);
                         }
 
-                        else if (E_state == true)
+                        else if (E_state)
                         {
-                            if (num_e < 5)
+                            if (X_Change)
                             {
-                                num_e++;
+                                if (num_e < 5)
+                                {
+                                    count_card++;
+                                    Debug.Log("x : " + count_card);
+                                    Debug.Log("x : " + X_state);
+                                    E_state = false;
+                                    X_Change = false;
+                                    num_e++;
+                                    state = true;
+                                }
                             }
-                            E_state = false;
-                            Debug.Log(num_e);
                         }
 
-                        else if (R_state == true)
+                        else if (R_state)
                         {
-                            if (num_r < 5)
+                            if (Z_Change)
                             {
-                                num_r++;
+                                if (num_r < 5)
+                                {
+                                    count_card++;
+                                    Debug.Log("z : " + count_card);
+                                    Debug.Log("z : " + Z_state);
+                                    R_state = false;
+                                    Z_Change = false;
+                                    num_r++;
+                                    state = true;
+                                }
+                                R_state = false;
                             }
-                            R_state = false;
-                            Debug.Log(num_r);
                         }
-                        state = true;
+
+                        else
+                        {
+                            state = false;
+                        }
+
+                        X_state = false;
+                        Z_state = false;
                     }
                 }
+            }
+
+            if (num_q > 4)
+            {
+                num_q = 5;
+            }
+
+            if (num_w > 4)
+            {
+                num_w = 5;
+            }
+
+            if (num_e > 4)
+            {
+                num_e = 5;
+            }
+
+            if (num_r > 4)
+            {
+                num_r = 5;
             }
         }
 

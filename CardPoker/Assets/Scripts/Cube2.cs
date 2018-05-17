@@ -25,12 +25,21 @@ public class Cube2 : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
+    void Kinemetic()
+    {
+        GetComponent<Rigidbody>().isKinematic = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
 
+        if (gamemanager.count_card >= 5)
+        {
+            Kinemetic();
+        }
 
         if (temp.z >= 2.5f)
         {

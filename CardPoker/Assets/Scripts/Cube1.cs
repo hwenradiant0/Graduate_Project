@@ -9,6 +9,7 @@ public class Cube1 : MonoBehaviour {
     Vector3 temp;
     int a = 0;
 
+
     public Color[] color;
     Material m_Material;
     
@@ -24,12 +25,21 @@ public class Cube1 : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
+    void Kinemetic()
+    {
+        GetComponent<Rigidbody>().isKinematic = false ;
+    }
+
     // Update is called once per frame
     void Update ()
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
         
+        if (gamemanager.count_card >= 5)
+        {
+            Kinemetic();
+        }
 
         if (temp.x >= 2.5f)
         {
@@ -71,7 +81,6 @@ public class Cube1 : MonoBehaviour {
         }
         else // 큐브가 멈췄을때
         {
-            GetComponent<Rigidbody>().isKinematic = false;
             m_Material.color = color[2];
         }
 
