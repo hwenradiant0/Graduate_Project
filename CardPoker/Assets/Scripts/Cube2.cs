@@ -30,12 +30,8 @@ public class Cube2 : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = false;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Move_Cube()
     {
-        temp = transform.localPosition;
-        transform.localPosition = temp;
-
         if (gamemanager.count_card >= 5)
         {
             Kinemetic();
@@ -85,6 +81,18 @@ public class Cube2 : MonoBehaviour
             m_Material.color = color[2];
         }
 
+
         transform.localPosition = temp;
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        temp = transform.localPosition;
+        transform.localPosition = temp;
+
+        Move_Cube();
+        
     }
 }

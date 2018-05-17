@@ -141,61 +141,8 @@ public class Gamemanager : MonoBehaviour
         //test = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Ingame()
     {
-        /*
-        Debug.Log("Q");
-        for (int i = 0; i < 5; i++)
-        {
-            Debug.Log(Q_Deck[i]);
-        }
-
-        Debug.Log("E");
-        for (int i = 0; i < 5; i++)
-        {
-            Debug.Log(E_Deck[i]);
-        }
-
-        Debug.Log("W");
-        for (int i = 0; i < 5; i++)
-        {
-            Debug.Log(num_w);
-        }
-
-        Debug.Log("R");
-        for (int i = 0; i < 5; i++)
-        {
-            Debug.Log(R_Deck[i]);
-        }
-        */
-        /*
-        if (X_state == true)                            // X큐브가 움직일때
-        {
-            if (X_Change == true)                       // X큐브가 서로 만날때
-            {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    X_state = false;
-                }
-            }
-        }
-
-        if (Z_state == true)
-        {
-            if (Z_Change == true)
-            {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    count_card++;
-                    Z_state = false;
-                    Debug.Log("z : " + count_card);
-                    Debug.Log("z : " + Z_state);
-                }
-            }
-        }*/
-
-
         if (f_state == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -241,7 +188,7 @@ public class Gamemanager : MonoBehaviour
 
                     X_state = true;
                     Z_state = false;
-                    
+
                 }
 
                 else if (Input.GetKeyDown(KeyCode.W))
@@ -277,7 +224,7 @@ public class Gamemanager : MonoBehaviour
 
                     X_state = false;
                     Z_state = true;
-                    
+
                 }
 
                 else if (Input.GetKeyDown(KeyCode.E))
@@ -359,6 +306,7 @@ public class Gamemanager : MonoBehaviour
                             Destroy(C[i]);
                         }
                         n_Cube = 0;
+                        count_card = 0;
                     }
                 }
             }
@@ -469,7 +417,10 @@ public class Gamemanager : MonoBehaviour
                 num_r = 5;
             }
         }
+    }
 
+    void Collision_Cube()
+    {
         if (n_Cube > 1)
         {
             if (C[n_Cube - 1].transform.position.x > C[n_Cube - 2].transform.position.x - 1.0f)
@@ -515,6 +466,13 @@ public class Gamemanager : MonoBehaviour
         {
             Z_Change = true;
         }
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
+        Ingame();
+
+        Collision_Cube();
     }
 }

@@ -30,17 +30,8 @@ public class Cube1 : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = false ;
     }
 
-    // Update is called once per frame
-    void Update ()
+    void Move_Cube()
     {
-        temp = transform.localPosition;
-        transform.localPosition = temp;
-        
-        if (gamemanager.count_card >= 5)
-        {
-            Kinemetic();
-        }
-
         if (temp.x >= 2.5f)
         {
             a = 1;
@@ -53,7 +44,7 @@ public class Cube1 : MonoBehaviour {
         switch (a)
         {
             case 0:
-                temp.x = temp.x + 1*Time.deltaTime;
+                temp.x = temp.x + 1 * Time.deltaTime;
                 break;
             case 1:
                 temp.x = temp.x - 1 * Time.deltaTime;
@@ -79,11 +70,27 @@ public class Cube1 : MonoBehaviour {
                 m_Material.color = color[1];
             }
         }
+
         else // 큐브가 멈췄을때
         {
             m_Material.color = color[2];
         }
 
         transform.localPosition = temp;
-	}
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {
+        temp = transform.localPosition;
+        transform.localPosition = temp;
+        
+        if (gamemanager.count_card >= 5)
+        {
+            Kinemetic();
+        }
+
+        Move_Cube();
+
+    }
 }
