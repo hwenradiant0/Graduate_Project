@@ -25,13 +25,19 @@ public class Cube1 : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    void Kinemetic()
+    void Kinemetic(bool test)
     {
-        GetComponent<Rigidbody>().isKinematic = false ;
+        GetComponent<Rigidbody>().isKinematic = test;
     }
 
     void Move_Cube()
     {
+        if (gamemanager.count_card % 5 == 0)
+        {
+            if (gamemanager.count_card != 0)
+                Kinemetic(false);
+        }
+
         if (temp.x >= 2.5f)
         {
             a = 1;
@@ -84,11 +90,6 @@ public class Cube1 : MonoBehaviour {
     {
         temp = transform.localPosition;
         transform.localPosition = temp;
-        
-        if (gamemanager.count_card >= 5)
-        {
-            Kinemetic();
-        }
 
         Move_Cube();
 

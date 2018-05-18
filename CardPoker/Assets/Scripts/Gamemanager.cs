@@ -156,157 +156,161 @@ public class Gamemanager : MonoBehaviour
         {
             if (state)
             {
-                if (Input.GetKeyDown(KeyCode.Q))
+                if (count_card < 5)
                 {
-                    if (n_qCube < 5)
+                    if (Input.GetKeyDown(KeyCode.Q))
                     {
-                        if (n_Cube < 20)
+                        if (n_qCube < 5)
                         {
-                            x = Q_Deck[n_qCube];
-                            C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
-                            Pos_cubes[n_Cube] = C[n_Cube].transform;
-                            if (n_Cube == 0)
-                                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                            if (n_Cube < 20)
+                            {
+                                x = Q_Deck[n_qCube];
+                                C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
+                                Pos_cubes[n_Cube] = C[n_Cube].transform;
+                                if (n_Cube == 0)
+                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                                else
+                                {
+                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                }
+                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+                                a = a + 0.1f;
+                                n_Cube++;
+                                n_qCube++;
+                                state = false;
+                            }
                             else
                             {
-                                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                state = false;
                             }
-                            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+                            Q_state = true;
 
-                            a = a + 0.1f;
-                            n_Cube++;
-                            n_qCube++;
-                            state = false;
-                        }
-                        else
-                        {
-                            state = false;
+                            X_state = true;
+                            Z_state = false;
                         }
                     }
-                    Q_state = true;
 
-                    X_state = true;
-                    Z_state = false;
-
-                }
-
-                else if (Input.GetKeyDown(KeyCode.W))
-                {
-                    if (n_wCube < 5)
+                    else if (Input.GetKeyDown(KeyCode.W))
                     {
-                        if (n_Cube < 20)
+                        if (n_wCube < 5)
                         {
-                            z = W_Deck[n_wCube];
-                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
-                            Pos_cubes[n_Cube] = C[n_Cube].transform;
-                            if (n_Cube == 0)
-                                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                            if (n_Cube < 20)
+                            {
+                                z = W_Deck[n_wCube];
+                                C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
+                                Pos_cubes[n_Cube] = C[n_Cube].transform;
+                                if (n_Cube == 0)
+                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                                else
+                                {
+                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                }
+                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+                                a = a + 0.1f;
+                                n_Cube++;
+                                n_wCube++;
+                                state = false;
+                            }
                             else
                             {
-                                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                state = false;
                             }
-                            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+                            W_state = true;
 
-                            a = a + 0.1f;
-                            n_Cube++;
-                            n_wCube++;
-                            state = false;
-                        }
-                        else
-                        {
-                            state = false;
-                        }
+                            X_state = false;
+                            Z_state = true;
 
-                    }
-                    W_state = true;
-
-                    X_state = false;
-                    Z_state = true;
-
-                }
-
-                else if (Input.GetKeyDown(KeyCode.E))
-                {
-                    if (n_eCube < 5)
-                    {
-                        if (n_Cube < 20)
-                        {
-                            x = E_Deck[n_eCube];
-                            C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
-                            Pos_cubes[n_Cube] = C[n_Cube].transform;
-                            if (n_Cube == 0)
-                                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                            else
-                            {
-                                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                            }
-                            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                            a = a + 0.1f;
-                            n_Cube++;
-                            n_eCube++;
-                            state = false;
-                        }
-                        else
-                        {
-                            state = false;
                         }
 
                     }
-                    E_state = true;
 
-                    X_state = true;
-                    Z_state = false;
-                }
-
-                else if (Input.GetKeyDown(KeyCode.R))
-                {
-                    if (n_rCube < 5)
+                    else if (Input.GetKeyDown(KeyCode.E))
                     {
-                        if (n_Cube < 20)
+                        if (n_eCube < 5)
                         {
-                            z = R_Deck[n_rCube];
-                            C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
-                            Pos_cubes[n_Cube] = C[n_Cube].transform;
-                            if (n_Cube == 0)
-                                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                            if (n_Cube < 20)
+                            {
+                                x = E_Deck[n_eCube];
+                                C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
+                                Pos_cubes[n_Cube] = C[n_Cube].transform;
+                                if (n_Cube == 0)
+                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                                else
+                                {
+                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                }
+                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+                                a = a + 0.1f;
+                                n_Cube++;
+                                n_eCube++;
+                                state = false;
+                            }
                             else
                             {
-                                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                state = false;
                             }
-                            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
 
-                            a = a + 0.1f;
-                            n_Cube++;
-                            n_rCube++;
-                            state = false;
                         }
-                        else
-                        {
-                            state = false;
-                        }
+                        E_state = true;
 
+                        X_state = true;
+                        Z_state = false;
                     }
-                    R_state = true;
 
-                    X_state = false;
-                    Z_state = true;
-                }
-
-                if (n_Cube >= 5)
-                {
-                    if (Input.GetKeyDown(KeyCode.K))
+                    else if (Input.GetKeyDown(KeyCode.R))
                     {
-                        for (int i = 0; i < 5; i++)
+                        if (n_rCube < 5)
                         {
-                            Destroy(C[i]);
+                            if (n_Cube < 20)
+                            {
+                                z = R_Deck[n_rCube];
+                                C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
+                                Pos_cubes[n_Cube] = C[n_Cube].transform;
+                                if (n_Cube == 0)
+                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                                else
+                                {
+                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                                }
+                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+                                a = a + 0.1f;
+                                n_Cube++;
+                                n_rCube++;
+                                state = false;
+                            }
+                            else
+                            {
+                                state = false;
+                            }
+
                         }
-                        n_Cube = 0;
-                        count_card = 0;
+                        R_state = true;
+
+                        X_state = false;
+                        Z_state = true;
+                    }
+                }
+                else
+                {
+                    if (n_Cube >= 5)
+                    {
+                        if (Input.GetKeyDown(KeyCode.K))
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                Destroy(C[i]);
+                            }
+                            n_Cube = 0;
+                            count_card = 0;
+                        }
                     }
                 }
             }

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Cube2 : MonoBehaviour
 {
-
     Gamemanager gamemanager;
 
     Vector3 temp;
     int a = 0;
+
 
     public Color[] color;
     Material m_Material;
@@ -25,16 +25,17 @@ public class Cube2 : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    void Kinemetic()
+    void Kinemetic(bool test)
     {
-        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Rigidbody>().isKinematic = test;
     }
 
     void Move_Cube()
     {
-        if (gamemanager.count_card >= 5)
+        if (gamemanager.count_card % 5 == 0)
         {
-            Kinemetic();
+            if (gamemanager.count_card != 0)
+                Kinemetic(false);
         }
 
         if (temp.z >= 2.5f)
@@ -75,15 +76,13 @@ public class Cube2 : MonoBehaviour
                 m_Material.color = color[1];
             }
         }
+
         else // 큐브가 멈췄을때
         {
-            GetComponent<Rigidbody>().isKinematic = false;
             m_Material.color = color[2];
         }
 
-
         transform.localPosition = temp;
-
     }
 
     // Update is called once per frame
@@ -93,6 +92,5 @@ public class Cube2 : MonoBehaviour
         transform.localPosition = temp;
 
         Move_Cube();
-        
     }
 }
