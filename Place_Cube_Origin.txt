@@ -1,0 +1,59 @@
+if (Q_state == true)
+{
+    if (X_Change)
+    {
+        if (num_q < 5)
+        {
+            count_card++;
+            Q_state = false;
+            X_Change = false;
+            num_q++;
+            state = true;
+        }
+    }
+}
+
+else if (W_state == true)
+{
+    if (Z_Change)
+    {
+        if (num_w < 5)
+        {
+            count_card++;
+            W_state = false;
+            Z_Change = false;
+            num_w++;
+            state = true;
+        }
+    }
+}
+
+else if (E_state == true)
+{
+    if (X_Change)
+    {
+        if (num_e < 5)
+        {
+            count_card++;
+            E_state = false;
+            X_Change = false;
+            num_e++;
+            state = true;
+        }
+    }
+}
+
+else if (R_state == true)
+{
+    if (Z_Change)
+    {
+        if (num_r < 5)
+        {
+            count_card++;
+            R_state = false;
+            Z_Change = false;
+            num_r++;
+            state = true;
+        }
+    }
+}

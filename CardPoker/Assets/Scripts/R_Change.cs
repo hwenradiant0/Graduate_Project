@@ -19,7 +19,7 @@ public class R_Change : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        switch (gamemanager.R_Deck[gamemanager.num_r])
+        switch (gamemanager.get_rDeck()[gamemanager.get_numr()])
         {
             case 1:
                 this.GetComponent<Image>().overrideSprite = Card_image[0];

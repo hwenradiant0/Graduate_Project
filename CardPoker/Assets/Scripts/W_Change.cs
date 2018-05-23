@@ -19,7 +19,7 @@ public class W_Change : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        switch (gamemanager.W_Deck[gamemanager.num_w])
+        switch (gamemanager.get_wDeck()[gamemanager.get_numw()])
         {
             case 0:
                 this.GetComponent<Image>().overrideSprite = Card_image[0];

@@ -10,34 +10,26 @@ public class Gamemanager : MonoBehaviour
     private GameObject[] Z_Cubes = null;
     [SerializeField]
     private GameObject[] C = null;
-    //[SerializeField]
-    //private GameObject[] Z_C = null;
     [SerializeField]
     private Transform[] Pos_cubes = null;
-    public int n_Cube = 0;
-    //[SerializeField]
-    //private Transform[] Pos_Zcubes = null;
 
-    public int num_q, num_w, num_e, num_r = -1;
+    int n_Cube = 0;
 
-    float a = 0;
-    int n_qCube, n_wCube, n_eCube, n_rCube = 0;
+    int num_q, num_w, num_e, num_r;
 
-    public int x = 0;
-    public int z = 0;
-    int shuffle = 0;
+    float Pos_Y = 0;
 
-    public int count_card = 0;
+    int n_qCube, n_wCube, n_eCube, n_rCube;
+    
+    int count_card = 0;
 
-    public int[] X_Deck = null;
-    public int[] Z_Deck = null;
+    int[] X_Deck = null;
+    int[] Z_Deck = null;
 
-    public int[] Q_Deck = null;
-    public int[] W_Deck = null;
-    public int[] E_Deck = null;
-    public int[] R_Deck = null;
-
-    int tmp = 0;
+    int[] Q_Deck = null;
+    int[] W_Deck = null;
+    int[] E_Deck = null;
+    int[] R_Deck = null;
 
     public bool X_Change, Z_Change;
 
@@ -47,12 +39,13 @@ public class Gamemanager : MonoBehaviour
 
     public bool X_state, Z_state;
 
-    //bool test;
-
-    int q, w, e, r = 0;
+    int q, w, e, r;
 
     void Shuffle()
     {
+        int shuffle = 0;
+        int tmp = 0;
+
         for (int i = 0; i < 10; i++)
         {
             X_Deck[i] = i;
@@ -106,9 +99,36 @@ public class Gamemanager : MonoBehaviour
         }
     }
 
+    public int get_numq() { return num_q; }
+    public int get_numw() { return num_w; }
+    public int get_nume() { return num_e; }
+    public int get_numr() { return num_r; }
+
+    public int[] get_qDeck() { return Q_Deck; }
+    public int[] get_wDeck() { return W_Deck; }
+    public int[] get_eDeck() { return E_Deck; }
+    public int[] get_rDeck() { return R_Deck; }
+
+    public int get_countcard() { return count_card; }
+
     // Use this for initialization
     void Start()
     {
+        q = 0;
+        w = 0;
+        e = 0;
+        r = 0;
+
+        num_q = 0;
+        num_w = 0;
+        num_e = 0;
+        num_r = 0;
+
+        n_qCube = 0;
+        n_wCube = 0;
+        n_eCube = 0;
+        n_rCube = 0;
+
         X_Deck = new int[10];
         Z_Deck = new int[10];
 
@@ -141,6 +161,52 @@ public class Gamemanager : MonoBehaviour
         //test = true;
     }
 
+    void Select_Card(GameObject[] Cube_Type, int Cube_num, int[] Deck_Type)
+    {
+        if (Cube_num < 5)
+        {
+            if (n_Cube < 20)
+            {
+                int card = Deck_Type[Cube_num];
+                C[n_Cube] = GameObject.Instantiate(Cube_Type[card]);
+                Pos_cubes[n_Cube] = C[n_Cube].transform;
+                if (n_Cube == 0)
+                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+                else
+                {
+                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                }
+                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+                Pos_Y = Pos_Y + 0.1f;
+                n_Cube++;
+                Cube_num++;
+                state = false;
+            }
+            else
+            {
+                state = false;
+            }
+        }
+
+        X_state = true;
+        Z_state = false;
+    }
+
+    void Place_Card(int n_card, bool K_state, bool change)
+    {
+        if (change == true)
+        {
+            if (n_card < 5)
+            {
+                count_card++;
+                change = false;
+                state = true;
+            }
+        }
+    }
+
     void Ingame()
     {
         if (f_state == true)
@@ -160,142 +226,30 @@ public class Gamemanager : MonoBehaviour
                 {
                     if (Input.GetKeyDown(KeyCode.Q))
                     {
-                        if (n_qCube < 5)
-                        {
-                            if (n_Cube < 20)
-                            {
-                                x = Q_Deck[n_qCube];
-                                C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
-                                Pos_cubes[n_Cube] = C[n_Cube].transform;
-                                if (n_Cube == 0)
-                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                                else
-                                {
-                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                                }
-                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                                a = a + 0.1f;
-                                n_Cube++;
-                                n_qCube++;
-                                state = false;
-                            }
-                            else
-                            {
-                                state = false;
-                            }
-                            Q_state = true;
-
-                            X_state = true;
-                            Z_state = false;
-                        }
+                        Select_Card(X_Cubes, n_qCube, Q_Deck);
+                        n_qCube++;
+                        Q_state = true;
                     }
 
                     else if (Input.GetKeyDown(KeyCode.W))
                     {
-                        if (n_wCube < 5)
-                        {
-                            if (n_Cube < 20)
-                            {
-                                z = W_Deck[n_wCube];
-                                C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
-                                Pos_cubes[n_Cube] = C[n_Cube].transform;
-                                if (n_Cube == 0)
-                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                                else
-                                {
-                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                                }
-                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                                a = a + 0.1f;
-                                n_Cube++;
-                                n_wCube++;
-                                state = false;
-                            }
-                            else
-                            {
-                                state = false;
-                            }
-                            W_state = true;
-
-                            X_state = false;
-                            Z_state = true;
-
-                        }
-
+                        Select_Card(Z_Cubes, n_wCube, W_Deck);
+                        n_wCube++;
+                        W_state = true;
                     }
 
                     else if (Input.GetKeyDown(KeyCode.E))
                     {
-                        if (n_eCube < 5)
-                        {
-                            if (n_Cube < 20)
-                            {
-                                x = E_Deck[n_eCube];
-                                C[n_Cube] = GameObject.Instantiate(X_Cubes[x]);
-                                Pos_cubes[n_Cube] = C[n_Cube].transform;
-                                if (n_Cube == 0)
-                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                                else
-                                {
-                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                                }
-                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                                a = a + 0.1f;
-                                n_Cube++;
-                                n_eCube++;
-                                state = false;
-                            }
-                            else
-                            {
-                                state = false;
-                            }
-
-                        }
+                        Select_Card(X_Cubes, n_eCube, E_Deck);
+                        n_eCube++;
                         E_state = true;
-
-                        X_state = true;
-                        Z_state = false;
                     }
 
                     else if (Input.GetKeyDown(KeyCode.R))
                     {
-                        if (n_rCube < 5)
-                        {
-                            if (n_Cube < 20)
-                            {
-                                z = R_Deck[n_rCube];
-                                C[n_Cube] = GameObject.Instantiate(Z_Cubes[z]);
-                                Pos_cubes[n_Cube] = C[n_Cube].transform;
-                                if (n_Cube == 0)
-                                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                                else
-                                {
-                                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                                }
-                                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                                a = a + 0.1f;
-                                n_Cube++;
-                                n_rCube++;
-                                state = false;
-                            }
-                            else
-                            {
-                                state = false;
-                            }
-
-                        }
+                        Select_Card(Z_Cubes, n_rCube, R_Deck);
+                        n_rCube++;
                         R_state = true;
-
-                        X_state = false;
-                        Z_state = true;
                     }
                 }
                 else
@@ -321,73 +275,32 @@ public class Gamemanager : MonoBehaviour
                 {
                     if (f_state == false)
                     {
-                        if (Q_state)
+                        if (Q_state == true)
                         {
-                            if (X_Change)
-                            {
-                                if (num_q < 5)
-                                {
-                                    count_card++;
-                                    Debug.Log("x : " + count_card);
-                                    Debug.Log("x : " + X_state);
-                                    Q_state = false;
-                                    X_Change = false;
-                                    num_q++;
-                                    state = true;
-                                }
-                            }
+                            Place_Card(num_q, Q_state, X_Change);
+                            num_q++;
+                            Q_state = false;
                         }
 
-                        else if (W_state)
+                        else if (W_state == true)
                         {
-                            if (Z_Change)
-                            {
-                                if (num_w < 5)
-                                {
-                                    count_card++;
-                                    Debug.Log("z : " + count_card);
-                                    Debug.Log("z : " + Z_state);
-                                    W_state = false;
-                                    Z_Change = false;
-                                    num_w++;
-                                    state = true;
-                                }
-                            }
+                            Place_Card(num_w, W_state, Z_Change);
+                            num_w++;
+                            W_state = false;
                         }
 
-                        else if (E_state)
+                        else if (E_state == true)
                         {
-                            if (X_Change)
-                            {
-                                if (num_e < 5)
-                                {
-                                    count_card++;
-                                    Debug.Log("x : " + count_card);
-                                    Debug.Log("x : " + X_state);
-                                    E_state = false;
-                                    X_Change = false;
-                                    num_e++;
-                                    state = true;
-                                }
-                            }
+                            Place_Card(num_e, E_state, X_Change);
+                            num_e++;
+                            E_state = false;
                         }
 
-                        else if (R_state)
+                        else if (R_state == true)
                         {
-                            if (Z_Change)
-                            {
-                                if (num_r < 5)
-                                {
-                                    count_card++;
-                                    Debug.Log("z : " + count_card);
-                                    Debug.Log("z : " + Z_state);
-                                    R_state = false;
-                                    Z_Change = false;
-                                    num_r++;
-                                    state = true;
-                                }
-                                R_state = false;
-                            }
+                            Place_Card(num_r, R_state, Z_Change);
+                            num_r++;
+                            R_state = false;
                         }
 
                         else

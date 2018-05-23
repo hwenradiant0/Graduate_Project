@@ -19,7 +19,7 @@ public class E_Change : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        switch (gamemanager.E_Deck[gamemanager.num_e])
+        switch (gamemanager.get_eDeck()[gamemanager.get_nume()])
         {
             case 1:
                 this.GetComponent<Image>().overrideSprite = Card_image[0];

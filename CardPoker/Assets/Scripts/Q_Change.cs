@@ -19,7 +19,7 @@ public class Q_Change : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        switch (gamemanager.Q_Deck[gamemanager.num_q])
+        switch (gamemanager.get_qDeck()[gamemanager.get_numq()])
         {
             case 0:
                 this.GetComponent<Image>().overrideSprite = Card_image[0];
