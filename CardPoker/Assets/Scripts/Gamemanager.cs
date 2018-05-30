@@ -163,38 +163,38 @@ public class Gamemanager : MonoBehaviour
 
     void Select_Card(GameObject[] Cube_Type, int Cube_num, int[] Deck_Type)
     {
-        if (Cube_num < 5)
+        if (Cube_num <= 5)
         {
-            if (n_Cube < 20)
-            {
-                int card = Deck_Type[Cube_num];
-                C[n_Cube] = GameObject.Instantiate(Cube_Type[card]);
-                Pos_cubes[n_Cube] = C[n_Cube].transform;
-                if (n_Cube == 0)
-                    Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
-                else
-                {
-                    Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                    Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
-                }
-                Pos_cubes[n_Cube].localRotation = Quaternion.identity;
-
-                Pos_Y = Pos_Y + 0.1f;
-                n_Cube++;
-                Cube_num++;
-                state = false;
-            }
+            int card = Deck_Type[Cube_num];
+            C[n_Cube] = GameObject.Instantiate(Cube_Type[card]);
+            Pos_cubes[n_Cube] = C[n_Cube].transform;
+            if (n_Cube == 0)
+                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
             else
             {
-                state = false;
+                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
+                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
             }
+            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+
+            if (Deck_Type == Q_Deck)
+                Debug.Log("q : " + Cube_num);
+            else if (Deck_Type == W_Deck)
+                Debug.Log("w : " + Cube_num);
+            Pos_Y = Pos_Y + 0.1f;
+            n_Cube++;
+            Cube_num++;
+            state = false;
         }
 
-        X_state = true;
-        Z_state = false;
+        else
+        {
+            Debug.Log("d3" + Cube_num);
+            state = false;
+        }
     }
 
-    void Place_Card(int n_card, bool K_state, bool change)
+    bool Place_Card(int n_card, bool K_state, bool change)
     {
         if (change == true)
         {
@@ -203,7 +203,17 @@ public class Gamemanager : MonoBehaviour
                 count_card++;
                 change = false;
                 state = true;
+
+                return true;
             }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -224,29 +234,33 @@ public class Gamemanager : MonoBehaviour
             {
                 if (count_card < 5)
                 {
-                    if (Input.GetKeyDown(KeyCode.Q))
+                    if (Input.GetKeyDown(KeyCode.Q) && n_qCube < 5)
                     {
+                        Debug.Log("a");
                         Select_Card(X_Cubes, n_qCube, Q_Deck);
                         n_qCube++;
                         Q_state = true;
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.W))
+                    else if (Input.GetKeyDown(KeyCode.W) && n_wCube < 5)
                     {
+                        Debug.Log("a");
                         Select_Card(Z_Cubes, n_wCube, W_Deck);
                         n_wCube++;
                         W_state = true;
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.E))
+                    else if (Input.GetKeyDown(KeyCode.E) && n_eCube < 5)
                     {
+                        Debug.Log("a");
                         Select_Card(X_Cubes, n_eCube, E_Deck);
                         n_eCube++;
                         E_state = true;
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.R))
+                    else if (Input.GetKeyDown(KeyCode.R) && n_rCube < 5)
                     {
+                        Debug.Log("a");
                         Select_Card(Z_Cubes, n_rCube, R_Deck);
                         n_rCube++;
                         R_state = true;
@@ -254,6 +268,7 @@ public class Gamemanager : MonoBehaviour
                 }
                 else
                 {
+                    //Debug.Log("b");
                     if (n_Cube >= 5)
                     {
                         if (Input.GetKeyDown(KeyCode.K))
@@ -271,40 +286,50 @@ public class Gamemanager : MonoBehaviour
 
             else
             {
+                //Debug.Log("c");
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     if (f_state == false)
                     {
                         if (Q_state == true)
                         {
-                            Place_Card(num_q, Q_state, X_Change);
-                            num_q++;
-                            Q_state = false;
+                            if (Place_Card(num_q, Q_state, X_Change) == true)
+                            {
+                                num_q++;
+                                Q_state = false;
+                            }
                         }
 
                         else if (W_state == true)
                         {
-                            Place_Card(num_w, W_state, Z_Change);
-                            num_w++;
-                            W_state = false;
+                            if (Place_Card(num_w, W_state, Z_Change) == true)
+                            {
+                                num_w++;
+                                W_state = false;
+                            }
                         }
 
                         else if (E_state == true)
                         {
-                            Place_Card(num_e, E_state, X_Change);
-                            num_e++;
-                            E_state = false;
+                            if (Place_Card(num_e, E_state, X_Change) == true)
+                            {
+                                num_e++;
+                                E_state = false;
+                            }
                         }
 
                         else if (R_state == true)
                         {
-                            Place_Card(num_r, R_state, Z_Change);
-                            num_r++;
-                            R_state = false;
+                            if (Place_Card(num_r, R_state, Z_Change) == true)
+                            {
+                                num_r++;
+                                R_state = false;
+                            }
                         }
 
                         else
                         {
+                            Debug.Log("d");
                             state = false;
                         }
 
