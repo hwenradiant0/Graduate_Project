@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gamemanager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject[] X_Cubes = null;
@@ -20,16 +20,16 @@ public class Gamemanager : MonoBehaviour
     float Pos_Y = 0;
 
     int n_qCube, n_wCube, n_eCube, n_rCube;
-    
+
     int count_card = 0;
 
-    int[] X_Deck = null;
-    int[] Z_Deck = null;
+    List<int> X_Deck = new List<int>();
+    List<int> Z_Deck = new List<int>();
 
-    int[] Q_Deck = null;
-    int[] W_Deck = null;
-    int[] E_Deck = null;
-    int[] R_Deck = null;
+    List<int> Q_Deck = new List<int>();
+    List<int> W_Deck = new List<int>();
+    List<int> E_Deck = new List<int>();
+    List<int> R_Deck = new List<int>();
 
     public bool X_Change, Z_Change;
 
@@ -48,27 +48,34 @@ public class Gamemanager : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            X_Deck[i] = i;
-            Z_Deck[i] = i;
+            X_Deck.Insert(i, i);
+            Z_Deck.Insert(i, i);
         }
 
-        for (int i = 10; i > 0; i--)
+        for (int i = 0; i < 10; i++)
         {
-            shuffle = Random.Range(0, i);
-            tmp = X_Deck[i - 1];
-            X_Deck[i - 1] = X_Deck[shuffle];
-            X_Deck[shuffle] = tmp;
+            shuffle = Random.Range(0, 10 - i);
+            tmp = X_Deck[9 - i];
+
+            X_Deck.RemoveAt(9 - i);
+            X_Deck.Insert(9 - i, X_Deck[shuffle]);
+
+            X_Deck.RemoveAt(shuffle);
+            X_Deck.Insert(shuffle, tmp);
         }
 
         for (int i = 0; i < 10; i++)
         {
             if (X_Deck[i] % 2 == 0)
             {
-                Q_Deck[q] = X_Deck[i];
+                Q_Deck.RemoveAt(q);
+                Q_Deck.Insert(q, X_Deck[i]);
                 q++;
             }
             else
             {
+                E_Deck.RemoveAt(e);
+                E_Deck.Insert(e, X_Deck[i]);
                 E_Deck[e] = X_Deck[i];
                 e++;
             }
@@ -76,24 +83,30 @@ public class Gamemanager : MonoBehaviour
 
         tmp = 0;
 
-        for (int i = 10; i > 0; i--)
+        for (int i = 0; i < 10; i++)
         {
-            shuffle = Random.Range(0, i);
-            tmp = Z_Deck[i - 1];
-            Z_Deck[i - 1] = Z_Deck[shuffle];
-            Z_Deck[shuffle] = tmp;
+            shuffle = Random.Range(0, 10 - i);
+            tmp = Z_Deck[9 - i];
+
+            Z_Deck.RemoveAt(9 - i);
+            Z_Deck.Insert(9 - i, Z_Deck[shuffle]);
+
+            Z_Deck.RemoveAt(shuffle);
+            Z_Deck.Insert(shuffle, tmp);
         }
 
         for (int i = 0; i < 10; i++)
         {
             if (Z_Deck[i] % 2 == 0)
             {
-                W_Deck[w] = Z_Deck[i];
+                W_Deck.RemoveAt(w);
+                W_Deck.Insert(w, Z_Deck[i]);
                 w++;
             }
             else
             {
-                R_Deck[r] = Z_Deck[i];
+                R_Deck.RemoveAt(r);
+                R_Deck.Insert(r, Z_Deck[i]);
                 r++;
             }
         }
@@ -104,10 +117,10 @@ public class Gamemanager : MonoBehaviour
     public int get_nume() { return num_e; }
     public int get_numr() { return num_r; }
 
-    public int[] get_qDeck() { return Q_Deck; }
-    public int[] get_wDeck() { return W_Deck; }
-    public int[] get_eDeck() { return E_Deck; }
-    public int[] get_rDeck() { return R_Deck; }
+    public List<int> get_qDeck() { return Q_Deck; }
+    public List<int> get_wDeck() { return W_Deck; }
+    public List<int> get_eDeck() { return E_Deck; }
+    public List<int> get_rDeck() { return R_Deck; }
 
     public int get_countcard() { return count_card; }
 
@@ -129,18 +142,25 @@ public class Gamemanager : MonoBehaviour
         n_eCube = 0;
         n_rCube = 0;
 
-        X_Deck = new int[10];
-        Z_Deck = new int[10];
+        for (int i = 0; i < 10; i++)
+        {
+            Q_Deck.Insert(i, i);
+            W_Deck.Insert(i, i);
+            E_Deck.Insert(i, i);
+            R_Deck.Insert(i, i);
+        }
 
-        Q_Deck = new int[6];
-        W_Deck = new int[6];
-        E_Deck = new int[6];
-        R_Deck = new int[6];
+        Q_Deck.RemoveAt(5);
+        Q_Deck.Insert(5, -1);
 
-        Q_Deck[5] = -1;
-        W_Deck[5] = -1;
-        E_Deck[5] = -1;
-        R_Deck[5] = -1;
+        W_Deck.RemoveAt(5);
+        W_Deck.Insert(5, -1);
+
+        E_Deck.RemoveAt(5);
+        E_Deck.Insert(5, -1);
+
+        R_Deck.RemoveAt(5);
+        R_Deck.Insert(5, -1);
 
         f_state = true;
         state = false;
@@ -161,7 +181,7 @@ public class Gamemanager : MonoBehaviour
         //test = true;
     }
 
-    void Select_Card(GameObject[] Cube_Type, int Cube_num, int[] Deck_Type)
+    void Select_Card(GameObject[] Cube_Type, int Cube_num, List<int> Deck_Type)
     {
         if (Cube_num <= 5)
         {

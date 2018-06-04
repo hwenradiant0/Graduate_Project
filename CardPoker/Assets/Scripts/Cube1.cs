@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Cube1 : MonoBehaviour {
 
-    Gamemanager gamemanager;
+    GameManager gamemanager;
     
     Vector3 temp;
     int a = 0;
@@ -16,7 +16,7 @@ public class Cube1 : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        gamemanager = GameObject.Find("GameManager").GetComponent<Gamemanager>();
+        gamemanager = GameObject.Find("GameManager").GetComponent<GameManager>();
         m_Material = GetComponent<Renderer>().material;
     }
 

@@ -7,13 +7,13 @@ public class Q_Change : MonoBehaviour {
 
     [SerializeField]
     private Sprite[] Card_image = null;
-    
-    Gamemanager gamemanager;
+
+    GameManager gamemanager;
 
     // Use this for initialization
     void Start ()
     {
-        gamemanager = GameObject.Find("GameManager").GetComponent<Gamemanager>();
+        gamemanager = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 	
 	// Update is called once per frame
