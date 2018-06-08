@@ -9,7 +9,6 @@ public class Cube1 : MonoBehaviour {
     Vector3 temp;
     int a = 0;
 
-
     public Color[] color;
     Material m_Material;
     
@@ -25,18 +24,9 @@ public class Cube1 : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    void Kinemetic(bool test)
+    void moveCube()
     {
-        GetComponent<Rigidbody>().isKinematic = test;
-    }
-
-    void Move_Cube()
-    {
-        if (gamemanager.get_countcard() % 5 == 0)
-        {
-            if (gamemanager.get_countcard() != 0)
-                Kinemetic(false);
-        }
+        gamemanager.ControlCubeKinemetic(this);
 
         if (temp.x >= 2.5f)
         {
@@ -59,7 +49,7 @@ public class Cube1 : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (gamemanager.X_Change == true) // 큐브가 만날때
+            if (gamemanager.xState == true) // 큐브가 만날때
             {
                 a = 2;
             }
@@ -67,7 +57,7 @@ public class Cube1 : MonoBehaviour {
 
         if (a != 2) // 큐브가 움직일때
         {
-            if (gamemanager.X_Change == true)
+            if (gamemanager.xState == true)
             {
                 m_Material.color = color[0];
             }
@@ -91,7 +81,6 @@ public class Cube1 : MonoBehaviour {
         temp = transform.localPosition;
         transform.localPosition = temp;
 
-        Move_Cube();
-
+        moveCube();
     }
 }

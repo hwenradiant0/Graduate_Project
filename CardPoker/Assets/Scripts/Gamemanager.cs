@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,31 +14,29 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Transform[] Pos_cubes = null;
 
-    int n_Cube = 0;
+    int nCube = 0;
 
-    int num_q, num_w, num_e, num_r;
+    int nQcard, nWcard, nEcard, nRcard;
 
-    float Pos_Y = 0;
+    float posY = 0;
 
-    int n_qCube, n_wCube, n_eCube, n_rCube;
+    int nQcube, nWcube, nEcube, nRcube;
 
-    int count_card = 0;
+    int countCard = 0;
 
-    List<int> X_Deck = new List<int>();
-    List<int> Z_Deck = new List<int>();
+    List<int> xDeck = new List<int>();
+    List<int> zDeck = new List<int>();
 
-    List<int> Q_Deck = new List<int>();
-    List<int> W_Deck = new List<int>();
-    List<int> E_Deck = new List<int>();
-    List<int> R_Deck = new List<int>();
+    List<int> qDeck = new List<int>();
+    List<int> wDeck = new List<int>();
+    List<int> eDeck = new List<int>();
+    List<int> rDeck = new List<int>();
 
-    public bool X_Change, Z_Change;
+    public bool xState, zState;
 
-    bool f_state;
+    bool fState;
     bool state;
-    bool Q_state, W_state, E_state, R_state;
-
-    public bool X_state, Z_state;
+    bool qState, wState, eState, rState;
 
     int q, w, e, r;
 
@@ -48,35 +47,35 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            X_Deck.Insert(i, i);
-            Z_Deck.Insert(i, i);
+            xDeck.Insert(i, i);
+            zDeck.Insert(i, i);
         }
 
         for (int i = 0; i < 10; i++)
         {
             shuffle = Random.Range(0, 10 - i);
-            tmp = X_Deck[9 - i];
+            tmp = xDeck[9 - i];
 
-            X_Deck.RemoveAt(9 - i);
-            X_Deck.Insert(9 - i, X_Deck[shuffle]);
+            xDeck.RemoveAt(9 - i);
+            xDeck.Insert(9 - i, xDeck[shuffle]);
 
-            X_Deck.RemoveAt(shuffle);
-            X_Deck.Insert(shuffle, tmp);
+            xDeck.RemoveAt(shuffle);
+            xDeck.Insert(shuffle, tmp);
         }
 
         for (int i = 0; i < 10; i++)
         {
-            if (X_Deck[i] % 2 == 0)
+            if (xDeck[i] % 2 == 0)
             {
-                Q_Deck.RemoveAt(q);
-                Q_Deck.Insert(q, X_Deck[i]);
+                qDeck.RemoveAt(q);
+                qDeck.Insert(q, xDeck[i]);
                 q++;
             }
             else
             {
-                E_Deck.RemoveAt(e);
-                E_Deck.Insert(e, X_Deck[i]);
-                E_Deck[e] = X_Deck[i];
+                eDeck.RemoveAt(e);
+                eDeck.Insert(e, xDeck[i]);
+                eDeck[e] = xDeck[i];
                 e++;
             }
         }
@@ -86,43 +85,74 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             shuffle = Random.Range(0, 10 - i);
-            tmp = Z_Deck[9 - i];
+            tmp = zDeck[9 - i];
 
-            Z_Deck.RemoveAt(9 - i);
-            Z_Deck.Insert(9 - i, Z_Deck[shuffle]);
+            zDeck.RemoveAt(9 - i);
+            zDeck.Insert(9 - i, zDeck[shuffle]);
 
-            Z_Deck.RemoveAt(shuffle);
-            Z_Deck.Insert(shuffle, tmp);
+            zDeck.RemoveAt(shuffle);
+            zDeck.Insert(shuffle, tmp);
         }
 
         for (int i = 0; i < 10; i++)
         {
-            if (Z_Deck[i] % 2 == 0)
+            if (zDeck[i] % 2 == 0)
             {
-                W_Deck.RemoveAt(w);
-                W_Deck.Insert(w, Z_Deck[i]);
+                wDeck.RemoveAt(w);
+                wDeck.Insert(w, zDeck[i]);
                 w++;
             }
             else
             {
-                R_Deck.RemoveAt(r);
-                R_Deck.Insert(r, Z_Deck[i]);
+                rDeck.RemoveAt(r);
+                rDeck.Insert(r, zDeck[i]);
                 r++;
             }
         }
     }
 
-    public int get_numq() { return num_q; }
-    public int get_numw() { return num_w; }
-    public int get_nume() { return num_e; }
-    public int get_numr() { return num_r; }
+    public void ControlCubeKinemetic(Component Cube)
+    {
+        if (countCard % 5 == 0 && countCard != 0)
+            Cube.GetComponent<Rigidbody>().isKinematic = false;
 
-    public List<int> get_qDeck() { return Q_Deck; }
-    public List<int> get_wDeck() { return W_Deck; }
-    public List<int> get_eDeck() { return E_Deck; }
-    public List<int> get_rDeck() { return R_Deck; }
+    }
 
-    public int get_countcard() { return count_card; }
+    public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
+    {
+        if (qDeck[nQcard] == -1)
+            image.GetComponent<Image>().overrideSprite = cardImage[5];
+
+        else
+            image.GetComponent<Image>().overrideSprite = cardImage[qDeck[nQcard] / 2];
+    }
+
+    public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
+    {
+        if (wDeck[nWcard] == -1)
+            image.GetComponent<Image>().overrideSprite = cardImage[5];
+
+        else
+            image.GetComponent<Image>().overrideSprite = cardImage[wDeck[nWcard] / 2];
+    }
+
+    public void ChangeLastItemInEDeck(Component image, Sprite[] cardImage)
+    {
+        if (eDeck[nEcard] == -1)
+            image.GetComponent<Image>().overrideSprite = cardImage[5];
+
+        else
+            image.GetComponent<Image>().overrideSprite = cardImage[eDeck[nEcard] / 2];
+    }
+
+    public void ChangeLastItemInRDeck(Component image, Sprite[] cardImage)
+    {
+        if(rDeck[nRcard] == -1)
+            image.GetComponent<Image>().overrideSprite = cardImage[5];
+
+        else
+            image.GetComponent<Image>().overrideSprite = cardImage[rDeck[nRcard] / 2];
+    }
 
     // Use this for initialization
     void Start()
@@ -132,118 +162,109 @@ public class GameManager : MonoBehaviour
         e = 0;
         r = 0;
 
-        num_q = 0;
-        num_w = 0;
-        num_e = 0;
-        num_r = 0;
+        nQcard = 0;
+        nWcard = 0;
+        nEcard = 0;
+        nRcard = 0;
 
-        n_qCube = 0;
-        n_wCube = 0;
-        n_eCube = 0;
-        n_rCube = 0;
+        nQcube = 0;
+        nWcube = 0;
+        nEcube = 0;
+        nRcube = 0;
 
         for (int i = 0; i < 10; i++)
         {
-            Q_Deck.Insert(i, i);
-            W_Deck.Insert(i, i);
-            E_Deck.Insert(i, i);
-            R_Deck.Insert(i, i);
+            qDeck.Insert(i, i);
+            wDeck.Insert(i, i);
+            eDeck.Insert(i, i);
+            rDeck.Insert(i, i);
         }
 
-        Q_Deck.RemoveAt(5);
-        Q_Deck.Insert(5, -1);
+        qDeck.RemoveAt(5);
+        qDeck.Insert(5, -1);
 
-        W_Deck.RemoveAt(5);
-        W_Deck.Insert(5, -1);
+        wDeck.RemoveAt(5);
+        wDeck.Insert(5, -1);
 
-        E_Deck.RemoveAt(5);
-        E_Deck.Insert(5, -1);
+        eDeck.RemoveAt(5);
+        eDeck.Insert(5, -1);
 
-        R_Deck.RemoveAt(5);
-        R_Deck.Insert(5, -1);
+        rDeck.RemoveAt(5);
+        rDeck.Insert(5, -1);
 
-        f_state = true;
+        fState = true;
         state = false;
 
-        Q_state = false;
-        W_state = false;
-        E_state = false;
-        R_state = false;
+        qState = false;
+        wState = false;
+        eState = false;
+        rState = false;
 
-        X_Change = false;
-        Z_Change = false;
-
-        X_state = false;
-        Z_state = false;
+        xState = false;
+        zState = false;
 
         Shuffle();
-
-        //test = true;
     }
 
-    void Select_Card(GameObject[] Cube_Type, int Cube_num, List<int> Deck_Type)
+    bool isColliding(float pos1, float pos2)
+    {
+        if (pos1 > pos2 - 1.0f && pos1 < pos2 + 1.0f)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    void selectCard(GameObject[] Cube_Type, int Cube_num, List<int> Deck_Type, ref int Type_Cube, ref bool Cube_State)
     {
         if (Cube_num <= 5)
         {
             int card = Deck_Type[Cube_num];
-            C[n_Cube] = GameObject.Instantiate(Cube_Type[card]);
-            Pos_cubes[n_Cube] = C[n_Cube].transform;
-            if (n_Cube == 0)
-                Pos_cubes[n_Cube].localPosition = new Vector3(0, 1.0f, 0);
+            C[nCube] = GameObject.Instantiate(Cube_Type[card]);
+            Pos_cubes[nCube] = C[nCube].transform;
+            if (nCube == 0)
+                Pos_cubes[nCube].localPosition = new Vector3(0, 1.0f, 0);
             else
             {
-                Pos_cubes[n_Cube].localPosition = Pos_cubes[n_Cube - 1].position;
-                Pos_cubes[n_Cube].Translate(0, 0.5f, 0);
+                Pos_cubes[nCube].localPosition = Pos_cubes[nCube - 1].position;
+                Pos_cubes[nCube].Translate(0, 0.5f, 0);
             }
-            Pos_cubes[n_Cube].localRotation = Quaternion.identity;
+            Pos_cubes[nCube].localRotation = Quaternion.identity;
 
-            if (Deck_Type == Q_Deck)
-                Debug.Log("q : " + Cube_num);
-            else if (Deck_Type == W_Deck)
-                Debug.Log("w : " + Cube_num);
-            Pos_Y = Pos_Y + 0.1f;
-            n_Cube++;
+            posY = posY + 0.1f;
+            nCube++;
             Cube_num++;
+            Type_Cube++;
             state = false;
+            Cube_State = true;
         }
 
         else
         {
-            Debug.Log("d3" + Cube_num);
             state = false;
         }
     }
 
-    bool Place_Card(int n_card, bool K_state, bool change)
+    void placeCard(ref int nCard, bool axis, ref bool cubeState)
     {
-        if (change == true)
+        if (nCard < 5)
         {
-            if (n_card < 5)
-            {
-                count_card++;
-                change = false;
-                state = true;
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
+            countCard++;
+            nCard++;
+            axis = false;
+            cubeState = false;
+            state = true;
         }
     }
 
     void Ingame()
     {
-        if (f_state == true)
+        if (fState == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
             {
-                f_state = false;
+                fState = false;
                 state = true;
             }
         }
@@ -252,44 +273,31 @@ public class GameManager : MonoBehaviour
         {
             if (state)
             {
-                if (count_card < 5)
+                if (countCard < 5)
                 {
-                    if (Input.GetKeyDown(KeyCode.Q) && n_qCube < 5)
+                    if (Input.GetKeyDown(KeyCode.Q) && nQcube < 5)
                     {
-                        Debug.Log("a");
-                        Select_Card(X_Cubes, n_qCube, Q_Deck);
-                        n_qCube++;
-                        Q_state = true;
+                        selectCard(X_Cubes, nQcube, qDeck, ref nQcube, ref qState);
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.W) && n_wCube < 5)
+                    else if (Input.GetKeyDown(KeyCode.W) && nWcube < 5)
                     {
-                        Debug.Log("a");
-                        Select_Card(Z_Cubes, n_wCube, W_Deck);
-                        n_wCube++;
-                        W_state = true;
+                        selectCard(Z_Cubes, nWcube, wDeck, ref nWcube, ref wState);
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.E) && n_eCube < 5)
+                    else if (Input.GetKeyDown(KeyCode.E) && nEcube < 5)
                     {
-                        Debug.Log("a");
-                        Select_Card(X_Cubes, n_eCube, E_Deck);
-                        n_eCube++;
-                        E_state = true;
+                        selectCard(X_Cubes, nEcube, eDeck, ref nEcube, ref eState);
                     }
 
-                    else if (Input.GetKeyDown(KeyCode.R) && n_rCube < 5)
+                    else if (Input.GetKeyDown(KeyCode.R) && nRcube < 5)
                     {
-                        Debug.Log("a");
-                        Select_Card(Z_Cubes, n_rCube, R_Deck);
-                        n_rCube++;
-                        R_state = true;
+                        selectCard(Z_Cubes, nRcube, rDeck, ref nRcube, ref rState);
                     }
                 }
                 else
                 {
-                    //Debug.Log("b");
-                    if (n_Cube >= 5)
+                    if (nCube >= 5)
                     {
                         if (Input.GetKeyDown(KeyCode.K))
                         {
@@ -297,8 +305,8 @@ public class GameManager : MonoBehaviour
                             {
                                 Destroy(C[i]);
                             }
-                            n_Cube = 0;
-                            count_card = 0;
+                            nCube = 0;
+                            countCard = 0;
                         }
                     }
                 }
@@ -306,127 +314,60 @@ public class GameManager : MonoBehaviour
 
             else
             {
-                //Debug.Log("c");
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    if (f_state == false)
+                    if (fState == false)
                     {
-                        if (Q_state == true)
+                        if (qState == true)
                         {
-                            if (Place_Card(num_q, Q_state, X_Change) == true)
-                            {
-                                num_q++;
-                                Q_state = false;
-                            }
+                            placeCard(ref nQcard, xState, ref qState);
                         }
 
-                        else if (W_state == true)
+                        else if (wState == true)
                         {
-                            if (Place_Card(num_w, W_state, Z_Change) == true)
-                            {
-                                num_w++;
-                                W_state = false;
-                            }
+                            placeCard(ref nWcard, zState, ref wState);
                         }
 
-                        else if (E_state == true)
+                        else if (eState == true)
                         {
-                            if (Place_Card(num_e, E_state, X_Change) == true)
-                            {
-                                num_e++;
-                                E_state = false;
-                            }
+                            placeCard(ref nEcard, xState, ref eState);
                         }
 
-                        else if (R_state == true)
+                        else if (rState == true)
                         {
-                            if (Place_Card(num_r, R_state, Z_Change) == true)
-                            {
-                                num_r++;
-                                R_state = false;
-                            }
+                            placeCard(ref nRcard, zState, ref rState);
                         }
 
                         else
                         {
-                            Debug.Log("d");
                             state = false;
                         }
-
-                        X_state = false;
-                        Z_state = false;
                     }
                 }
             }
 
-            if (num_q > 4)
-            {
-                num_q = 5;
-            }
+            if (nQcard > 4) nQcard = 5;
 
-            if (num_w > 4)
-            {
-                num_w = 5;
-            }
+            if (nWcard > 4) nWcard = 5;
 
-            if (num_e > 4)
-            {
-                num_e = 5;
-            }
+            if (nEcard > 4) nEcard = 5;
 
-            if (num_r > 4)
-            {
-                num_r = 5;
-            }
+            if (nRcard > 4) nRcard = 5;
         }
     }
 
     void Collision_Cube()
     {
-        if (n_Cube > 1)
+        if (nCube <= 1)
         {
-            if (C[n_Cube - 1].transform.position.x > C[n_Cube - 2].transform.position.x - 1.0f)
-            {
-                if (C[n_Cube - 1].transform.position.x < C[n_Cube - 2].transform.position.x + 1.0f)
-                {
-                    X_Change = true;
-                }
-                else
-                {
-                    X_Change = false;
-                }
-            }
-            else
-            {
-                X_Change = false;
-            }
+            xState = true;
+            zState = true;
         }
+
         else
         {
-            X_Change = true;
-        }
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (n_Cube > 1)
-        {
-            if (C[n_Cube - 1].transform.position.z > C[n_Cube - 2].transform.position.z - 1.0f)
-            {
-                if (C[n_Cube - 1].transform.position.z < C[n_Cube - 2].transform.position.z + 1.0f)
-                {
-                    Z_Change = true;
-                }
-                else
-                {
-                    Z_Change = false;
-                }
-            }
-            else
-            {
-                Z_Change = false;
-            }
-        }
-        else
-        {
-            Z_Change = true;
+            xState = isColliding(C[nCube - 1].transform.position.x, C[nCube - 2].transform.position.x);
+            zState = isColliding(C[nCube - 1].transform.position.z, C[nCube - 2].transform.position.z);
         }
     }
 
