@@ -3,8 +3,70 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class Deck
+{
+    bool even;
+
+    List<int> CardDeck = new List<int>();
+   
+    public Deck()
+    {
+    }
+
+    public List<int> getCards()
+    {
+        return CardDeck;
+    }
+
+    void shuffle(ref List<int> shuffleList)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            int shuffle = Random.Range(0, 3 - i);
+            int temp = shuffleList[4 - i];
+
+            shuffleList[4 - i] = shuffleList[shuffle];
+            shuffleList[shuffle] = temp;
+        }
+    }
+
+    public void Init(bool even)
+    {
+        this.even = even;
+
+        if (this.even == true)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (i == 5)
+                    CardDeck.Add(-1);
+                else
+                    CardDeck.Add(i * 2);
+            }
+        }
+
+        else
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (i == 5)
+                    CardDeck.Add(-1);
+                else
+                    CardDeck.Add(i * 2 + 1);
+            }
+        }
+
+        shuffle(ref CardDeck);
+    }
+}
+
 public class GameManager : MonoBehaviour
 {
+    Deck QDeck = new Deck();
+    Deck WDeck = new Deck();
+    Deck EDeck = new Deck();
+    Deck RDeck = new Deck();
+
     [SerializeField]
     private GameObject[] X_Cubes = null;
     [SerializeField]
@@ -27,140 +89,62 @@ public class GameManager : MonoBehaviour
     List<int> xDeck = new List<int>();
     List<int> zDeck = new List<int>();
 
-    List<int> qDeck = new List<int>();
-    List<int> wDeck = new List<int>();
-    List<int> eDeck = new List<int>();
-    List<int> rDeck = new List<int>();
-
     public bool xState, zState;
 
     bool fState;
     bool state;
     bool qState, wState, eState, rState;
 
-    int q, w, e, r;
-
-    void Shuffle()
-    {
-        int shuffle = 0;
-        int tmp = 0;
-
-        for (int i = 0; i < 10; i++)
-        {
-            xDeck.Insert(i, i);
-            zDeck.Insert(i, i);
-        }
-
-        for (int i = 0; i < 10; i++)
-        {
-            shuffle = Random.Range(0, 10 - i);
-            tmp = xDeck[9 - i];
-
-            xDeck.RemoveAt(9 - i);
-            xDeck.Insert(9 - i, xDeck[shuffle]);
-
-            xDeck.RemoveAt(shuffle);
-            xDeck.Insert(shuffle, tmp);
-        }
-
-        for (int i = 0; i < 10; i++)
-        {
-            if (xDeck[i] % 2 == 0)
-            {
-                qDeck.RemoveAt(q);
-                qDeck.Insert(q, xDeck[i]);
-                q++;
-            }
-            else
-            {
-                eDeck.RemoveAt(e);
-                eDeck.Insert(e, xDeck[i]);
-                eDeck[e] = xDeck[i];
-                e++;
-            }
-        }
-
-        tmp = 0;
-
-        for (int i = 0; i < 10; i++)
-        {
-            shuffle = Random.Range(0, 10 - i);
-            tmp = zDeck[9 - i];
-
-            zDeck.RemoveAt(9 - i);
-            zDeck.Insert(9 - i, zDeck[shuffle]);
-
-            zDeck.RemoveAt(shuffle);
-            zDeck.Insert(shuffle, tmp);
-        }
-
-        for (int i = 0; i < 10; i++)
-        {
-            if (zDeck[i] % 2 == 0)
-            {
-                wDeck.RemoveAt(w);
-                wDeck.Insert(w, zDeck[i]);
-                w++;
-            }
-            else
-            {
-                rDeck.RemoveAt(r);
-                rDeck.Insert(r, zDeck[i]);
-                r++;
-            }
-        }
-    }
-
     public void ControlCubeKinemetic(Component Cube)
     {
         if (countCard % 5 == 0 && countCard != 0)
             Cube.GetComponent<Rigidbody>().isKinematic = false;
-
     }
 
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
     {
-        if (qDeck[nQcard] == -1)
+        if (QDeck.getCards()[nQcard] == -1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[qDeck[nQcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[QDeck.getCards()[nQcard] / 2];
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
     {
-        if (wDeck[nWcard] == -1)
+        if (WDeck.getCards()[nWcard] == -1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[wDeck[nWcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[WDeck.getCards()[nWcard] / 2];
     }
 
     public void ChangeLastItemInEDeck(Component image, Sprite[] cardImage)
     {
-        if (eDeck[nEcard] == -1)
+        if (EDeck.getCards()[nEcard] == -1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[eDeck[nEcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[EDeck.getCards()[nEcard] / 2];
     }
 
     public void ChangeLastItemInRDeck(Component image, Sprite[] cardImage)
     {
-        if(rDeck[nRcard] == -1)
+        if (RDeck.getCards()[nRcard] == -1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[rDeck[nRcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[RDeck.getCards()[nRcard] / 2];
     }
+
 
     // Use this for initialization
     void Start()
     {
-        q = 0;
-        w = 0;
-        e = 0;
-        r = 0;
+        QDeck.Init(true);
+        WDeck.Init(true);
+        EDeck.Init(false);
+        RDeck.Init(false);
 
         nQcard = 0;
         nWcard = 0;
@@ -171,26 +155,6 @@ public class GameManager : MonoBehaviour
         nWcube = 0;
         nEcube = 0;
         nRcube = 0;
-
-        for (int i = 0; i < 10; i++)
-        {
-            qDeck.Insert(i, i);
-            wDeck.Insert(i, i);
-            eDeck.Insert(i, i);
-            rDeck.Insert(i, i);
-        }
-
-        qDeck.RemoveAt(5);
-        qDeck.Insert(5, -1);
-
-        wDeck.RemoveAt(5);
-        wDeck.Insert(5, -1);
-
-        eDeck.RemoveAt(5);
-        eDeck.Insert(5, -1);
-
-        rDeck.RemoveAt(5);
-        rDeck.Insert(5, -1);
 
         fState = true;
         state = false;
@@ -203,7 +167,6 @@ public class GameManager : MonoBehaviour
         xState = false;
         zState = false;
 
-        Shuffle();
     }
 
     bool isColliding(float pos1, float pos2)
@@ -216,7 +179,7 @@ public class GameManager : MonoBehaviour
             return false;
     }
 
-    void selectCard(GameObject[] Cube_Type, int Cube_num, List<int> Deck_Type, ref int Type_Cube, ref bool Cube_State)
+    void selectCard(GameObject[] Cube_Type, ref int Cube_num, List<int> Deck_Type, ref bool Cube_State)
     {
         if (Cube_num <= 5)
         {
@@ -235,7 +198,6 @@ public class GameManager : MonoBehaviour
             posY = posY + 0.1f;
             nCube++;
             Cube_num++;
-            Type_Cube++;
             state = false;
             Cube_State = true;
         }
@@ -277,22 +239,22 @@ public class GameManager : MonoBehaviour
                 {
                     if (Input.GetKeyDown(KeyCode.Q) && nQcube < 5)
                     {
-                        selectCard(X_Cubes, nQcube, qDeck, ref nQcube, ref qState);
+                        selectCard(X_Cubes, ref nQcube, QDeck.getCards(), ref qState);
                     }
 
                     else if (Input.GetKeyDown(KeyCode.W) && nWcube < 5)
                     {
-                        selectCard(Z_Cubes, nWcube, wDeck, ref nWcube, ref wState);
+                        selectCard(Z_Cubes, ref nWcube, WDeck.getCards(),  ref wState);
                     }
 
                     else if (Input.GetKeyDown(KeyCode.E) && nEcube < 5)
                     {
-                        selectCard(X_Cubes, nEcube, eDeck, ref nEcube, ref eState);
+                        selectCard(X_Cubes, ref nEcube, EDeck.getCards(), ref eState);
                     }
 
                     else if (Input.GetKeyDown(KeyCode.R) && nRcube < 5)
                     {
-                        selectCard(Z_Cubes, nRcube, rDeck, ref nRcube, ref rState);
+                        selectCard(Z_Cubes, ref nRcube, RDeck.getCards(),  ref rState);
                     }
                 }
                 else
