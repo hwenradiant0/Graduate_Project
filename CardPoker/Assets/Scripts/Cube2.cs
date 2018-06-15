@@ -27,7 +27,7 @@ public class Cube2 : MonoBehaviour
 
     void moveCube()
     {
-        gamemanager.ControlCubeKinemetic(this);
+        //gamemanager.ControlCubeKinemetic(this);
 
         if (temp.z >= 2.5f)
         {
