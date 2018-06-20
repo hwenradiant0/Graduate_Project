@@ -5,17 +5,19 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject[] X_Cubes = null;
+    [SerializeField]
+    private GameObject[] Z_Cubes = null;
+    [SerializeField]
+    private GameObject[] C = null;
+
     public class Deck
     {
-        bool even;              // even = true ? : XCube, even = false ? : ZCube
-        bool state;
-
         List<int> CardDeck = new List<int>(new int[] { 0, 2, 4, 6, 8 });
 
         public Deck(bool even)
         {
-            this.even = even;
-
             if (even == false)
             {
                 for (int i = 0; i < CardDeck.Count; i++)
@@ -23,13 +25,6 @@ public class GameManager : MonoBehaviour
             }
 
             shuffle(ref CardDeck);
-            print();
-        }
-
-        public void stateSwitch()
-        {
-            if (state == true)
-                state = false;
         }
 
         void shuffle(ref List<int> shuffleList)
@@ -44,54 +39,31 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        void print()
-        {
-            for (int i = 0; i < CardDeck.Count; i++)
-                Debug.Log(CardDeck[i]);
-        }
-
         public List<int> getCards()
         {
             return CardDeck;
         }
-
-
-        public bool getstate() { return state; }
     }
-
-    [SerializeField]
-    private GameObject[] X_Cubes = null;
-    [SerializeField]
-    private GameObject[] Z_Cubes = null;
-    [SerializeField]
-    private GameObject[] C = null;
-
+    
     int nCube = 0;
 
     int nQcard, nWcard, nEcard, nRcard;
-
-    float posY = 0;
-
-    int countCard = 0; // 맵 전체의 카드
-
-    List<int> xDeck = new List<int>();
-    List<int> zDeck = new List<int>();
-
+    
     public bool xState, zState;
-
     bool fState;
     bool state;
+
+    Deck QDeck = null;
+    Deck WDeck = null;
+    Deck EDeck = null;
+    Deck RDeck = null;
 
     // Use this for initialization
     void Start()
     {
-        Debug.Log("Q : ");
         QDeck = new Deck(true);
-        Debug.Log("W : ");
         WDeck = new Deck(true);
-        Debug.Log("E : ");
         EDeck = new Deck(false);
-        Debug.Log("R : ");
         RDeck = new Deck(false);
 
         nQcard = 0;
@@ -107,19 +79,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    Deck QDeck = null;
-    Deck WDeck = null;
-    Deck EDeck = null;
-    Deck RDeck = null;
-
-    /*
-    public void ControlCubeKinemetic(Component Cube)
-    {
-        if (countCard % 5 == 0 && countCard != 0)
-            Cube.GetComponent<Rigidbody>().isKinematic = false;
-    }
-    */
-
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
     {
         if (nQcard == 5)
@@ -128,7 +87,6 @@ public class GameManager : MonoBehaviour
         else
             image.GetComponent<Image>().overrideSprite = cardImage[QDeck.getCards()[nQcard] / 2];
 
-        Debug.Log("Q : " + nQcard);
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
@@ -181,7 +139,6 @@ public class GameManager : MonoBehaviour
         }
         C[nCube].transform.localRotation = Quaternion.identity;
 
-        posY = posY + 0.1f;
         nCube++;
         Card_num++;
         state = false;
@@ -227,8 +184,10 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Space) && fState == false)
                 {
-                    countCard++;
-                    state = true;
+                    if (xState == true && zState == true)
+                    {
+                        state = true;
+                    }
                 }
             }
 
