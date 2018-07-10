@@ -6,11 +6,103 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject[] X_Cubes = null;
+    public GameObject[] X_Cubes = null;
     [SerializeField]
-    private GameObject[] Z_Cubes = null;
-    [SerializeField]
-    private GameObject[] C = null;
+    public GameObject[] Z_Cubes = null;
+
+    public class CardManager
+    {
+        List<Card> Cards = new List<Card>();
+
+        bool xstate;
+        bool zstate;
+
+        public bool getxState() { return xstate; }
+        public bool getzState() { return zstate; }
+
+        private GameObject[] Cube = new GameObject[20];
+
+        public CardManager()
+        {
+        }
+
+        public void InputCard(string Type, int Num)
+        {
+            Cards.Add(new Card { CardType = Type, CardNum = Num });
+
+            Debug.Log("Type : " + Cards[Cards.Count-1].CardType);
+            Debug.Log("Num : " + Cards[Cards.Count-1].CardNum);
+        }
+
+        public void CreateCube(GameObject[] Cube_Type1, GameObject[] Cube_Type2, int nCube)
+        {
+            if (Cards[Cards.Count - 1].CardType == "Q" || Cards[Cards.Count - 1].CardType == "E")
+            {
+                Cube[nCube] = GameObject.Instantiate(Cube_Type1[Cards[Cards.Count - 1].CardNum]);
+            }
+            else
+            {
+                Cube[nCube] = GameObject.Instantiate(Cube_Type2[Cards[Cards.Count - 1].CardNum]);
+            }
+
+            if (nCube == 0)
+                Cube[nCube].transform.localPosition = new Vector3(0, 1.0f, 0);
+            else
+            {
+                Cube[nCube].transform.localPosition = Cube[nCube - 1].transform.position;
+                Cube[nCube].transform.Translate(0, 0.5f, 0);
+            }
+
+            Cube[nCube].transform.localRotation = Quaternion.identity;
+        }
+
+        public void CheckCollision(int nCube)
+        {
+            if (nCube > 1)
+            {
+                if (Cube[nCube - 1].transform.position.x > Cube[nCube - 2].transform.position.x - 1.0f && Cube[nCube - 1].transform.position.x < Cube[nCube - 2].transform.position.x + 1.0f)
+                {
+                    xstate = true;
+                    Debug.Log("nCube : " + nCube);
+                    Debug.Log("X : True");
+                }
+                else
+                {
+                    xstate = false;
+                    Debug.Log("X : False");
+                }
+
+                if (Cube[nCube - 1].transform.position.z > Cube[nCube - 2].transform.position.z - 1.0f && Cube[nCube - 1].transform.position.z < Cube[nCube - 2].transform.position.z + 1.0f)
+                {
+                    zstate = true;
+                    Debug.Log("Z : True");
+                }
+
+                else
+                {
+                    zstate = false;
+                    Debug.Log("Z : False");
+                }
+            }
+        }
+
+    }
+
+    /*
+    enum CardType{
+        Q = 1,
+        W = 2,
+        E = 3,
+        R = 4
+    };
+    */
+    
+    public class Card
+    {
+        public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
+        public int          CardNum;
+        
+    }
 
     public class Deck
     {
@@ -43,12 +135,26 @@ public class GameManager : MonoBehaviour
         {
             return CardDeck;
         }
+
+        public void selectCard()
+        {
+            Debug.Log(CardDeck.Count);
+            CardDeck.RemoveAt(0);
+        }
+
+        public int getCountCard()
+        {
+            return CardDeck.Count;
+        }
+
+        public int getLastCard()
+        {
+            return CardDeck[0];
+        }
     }
     
     int nCube = 0;
 
-    int nQcard, nWcard, nEcard, nRcard;
-    
     public bool xState, zState;
     bool fState;
     bool state;
@@ -58,18 +164,18 @@ public class GameManager : MonoBehaviour
     Deck EDeck = null;
     Deck RDeck = null;
 
+    CardManager CMG = null;
+
     // Use this for initialization
     void Start()
     {
         QDeck = new Deck(true);
+        for (int i = 0; i < 5; i++)
+            Debug.Log(QDeck.getCards()[i]);
         WDeck = new Deck(true);
         EDeck = new Deck(false);
         RDeck = new Deck(false);
-
-        nQcard = 0;
-        nWcard = 0;
-        nEcard = 0;
-        nRcard = 0;
+        CMG = new CardManager();
 
         fState = true;
         state = false;
@@ -81,41 +187,42 @@ public class GameManager : MonoBehaviour
 
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
     {
-        if (nQcard == 5)
+        if (QDeck.getCountCard() < 1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[QDeck.getCards()[nQcard] / 2];
-
+        {
+            image.GetComponent<Image>().overrideSprite = cardImage[QDeck.getLastCard() / 2];
+        }
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
     {
-        if (nWcard == 5)
+        if (WDeck.getCountCard() < 1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[WDeck.getCards()[nWcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[WDeck.getLastCard() / 2];
     }
 
     public void ChangeLastItemInEDeck(Component image, Sprite[] cardImage)
     {
-        if (nEcard == 5)
+        if (EDeck.getCountCard() < 1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[EDeck.getCards()[nEcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[EDeck.getLastCard() / 2];
     }
 
     public void ChangeLastItemInRDeck(Component image, Sprite[] cardImage)
     {
-        if (nRcard == 5)
+        if (RDeck.getCountCard() < 1)
             image.GetComponent<Image>().overrideSprite = cardImage[5];
 
         else
-            image.GetComponent<Image>().overrideSprite = cardImage[RDeck.getCards()[nRcard] / 2];
+            image.GetComponent<Image>().overrideSprite = cardImage[RDeck.getLastCard() / 2];
     }
-
+    /*
     bool isColliding(float pos1, float pos2)
     {
         if (pos1 > pos2 - 1.0f && pos1 < pos2 + 1.0f)
@@ -125,27 +232,10 @@ public class GameManager : MonoBehaviour
         else
             return false;
     }
-
-    void selectCard(GameObject[] Cube_Type, ref int Card_num, List<int> Deck_Type)
-    {
-        C[nCube] = GameObject.Instantiate(Cube_Type[Deck_Type[Card_num]]);
-
-        if (nCube == 0)
-            C[nCube].transform.localPosition = new Vector3(0, 1.0f, 0);
-        else
-        {
-            C[nCube].transform.localPosition = C[nCube-1].transform.position;
-            C[nCube].transform.Translate(0, 0.5f, 0);
-        }
-        C[nCube].transform.localRotation = Quaternion.identity;
-
-        nCube++;
-        Card_num++;
-        state = false;
-    }
+    */
     
     void Ingame()
-    {
+    {   
         if (fState == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -159,29 +249,47 @@ public class GameManager : MonoBehaviour
         {
             if (state)
             {
-                if (Input.GetKeyDown(KeyCode.Q) && nQcard < 5 )
+                if (Input.GetKeyDown(KeyCode.Q) && QDeck.getCountCard() > 0)
                 {
-                    selectCard(X_Cubes, ref nQcard, QDeck.getCards());
+                    CMG.InputCard("Q", QDeck.getLastCard());
+                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    QDeck.selectCard();
+                    nCube++;
+                    state = false;
                 }
 
-                else if (Input.GetKeyDown(KeyCode.W) && nWcard < 5)
+                else if (Input.GetKeyDown(KeyCode.W) && WDeck.getCountCard() > 0)
                 {
-                    selectCard(Z_Cubes, ref nWcard, WDeck.getCards());
+                    CMG.InputCard("W", WDeck.getCards()[0]);
+                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    WDeck.selectCard();
+                    nCube++;
+                    state = false;
                 }
 
-                else if (Input.GetKeyDown(KeyCode.E) && nEcard < 5)
+                else if (Input.GetKeyDown(KeyCode.E) && EDeck.getCountCard() > 0)
                 {
-                    selectCard(X_Cubes, ref nEcard, EDeck.getCards());
+                    CMG.InputCard("E", EDeck.getCards()[0]);
+                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    EDeck.selectCard();
+                    nCube++;
+                    state = false;
                 }
 
-                else if (Input.GetKeyDown(KeyCode.R) && nRcard < 5)
+                else if (Input.GetKeyDown(KeyCode.R) && RDeck.getCountCard() > 0)
                 {
-                    selectCard(Z_Cubes, ref nRcard, RDeck.getCards());
+                    CMG.InputCard("R", RDeck.getCards()[0]);
+                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    RDeck.selectCard();
+                    nCube++;
+                    state = false;
                 }
             }
 
             else
             {
+                CMG.CheckCollision(nCube);
+
                 if (Input.GetKeyDown(KeyCode.Space) && fState == false)
                 {
                     if (xState == true && zState == true)
@@ -190,14 +298,6 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
-
-            if (nQcard > 4) nQcard = 5;
-
-            if (nWcard > 4) nWcard = 5;
-
-            if (nEcard > 4) nEcard = 5;
-
-            if (nRcard > 4) nRcard = 5;
         }
     }
 
@@ -211,8 +311,8 @@ public class GameManager : MonoBehaviour
 
         else
         {
-            xState = isColliding(C[nCube - 1].transform.position.x, C[nCube - 2].transform.position.x);
-            zState = isColliding(C[nCube - 1].transform.position.z, C[nCube - 2].transform.position.z);
+            xState = CMG.getxState();
+            zState = CMG.getzState();
         }
     }
 
