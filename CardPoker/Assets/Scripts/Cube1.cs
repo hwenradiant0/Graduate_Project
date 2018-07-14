@@ -9,6 +9,8 @@ public class Cube1 : MonoBehaviour {
     Vector3 temp;
     int a = 0;
 
+    int CubeNum;
+
     public Color[] color;
     Material m_Material;
     
@@ -24,9 +26,36 @@ public class Cube1 : MonoBehaviour {
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
+    private void KinematicOn()
+    {
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    private void Kinematicoff()
+    {
+        GetComponent<Rigidbody>().isKinematic = false;
+    }
+
+    /// <summary>
+    /// kinematic = true
+    /// 단, 한시적으로(큐브가 터졌을때) 
+    /// kinematic = false 로 바꿔주고 충돌시 다시 true로
+    /// 
+    /// kinematicoff : 중력 영향 on
+    /// kinematicon : 중력 영향 off
+    /// </summary>
+
     void moveCube()
     {
-        //gamemanager.ControlCubeKinemetic(this);
+        if(gamemanager.xState == true)
+        {
+            Kinematicoff();
+        }
+
+        else
+        {
+            KinematicOn();
+        }
 
         if (temp.x >= 2.5f)
         {

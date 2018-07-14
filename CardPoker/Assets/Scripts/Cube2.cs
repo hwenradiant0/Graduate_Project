@@ -25,9 +25,27 @@ public class Cube2 : MonoBehaviour
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
+    private void KinematicOn()
+    {
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    private void Kinematicoff()
+    {
+        GetComponent<Rigidbody>().isKinematic = false;
+    }
+
     void moveCube()
     {
-        //gamemanager.ControlCubeKinemetic(this);
+        if (gamemanager.zState == true)
+        {
+            Kinematicoff();
+        }
+
+        else
+        {
+            KinematicOn();
+        }
 
         if (temp.z >= 2.5f)
         {

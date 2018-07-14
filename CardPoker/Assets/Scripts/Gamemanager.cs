@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         public bool getxState() { return xstate; }
         public bool getzState() { return zstate; }
 
-        private GameObject[] Cube = new GameObject[20];
+        private List<GameObject> Cubes = new List<GameObject>();
 
         public CardManager()
         {
@@ -38,54 +38,57 @@ public class GameManager : MonoBehaviour
         {
             if (Cards[Cards.Count - 1].CardType == "Q" || Cards[Cards.Count - 1].CardType == "E")
             {
-                Cube[nCube] = GameObject.Instantiate(Cube_Type1[Cards[Cards.Count - 1].CardNum]);
+                Cubes.Add(GameObject.Instantiate(Cube_Type1[Cards[Cards.Count - 1].CardNum]));
             }
             else
             {
-                Cube[nCube] = GameObject.Instantiate(Cube_Type2[Cards[Cards.Count - 1].CardNum]);
+                Cubes.Add(GameObject.Instantiate(Cube_Type2[Cards[Cards.Count - 1].CardNum]));
             }
 
             if (nCube == 0)
-                Cube[nCube].transform.localPosition = new Vector3(0, 1.0f, 0);
+                Cubes[nCube].transform.localPosition = new Vector3(0, 1.0f, 0);
             else
             {
-                Cube[nCube].transform.localPosition = Cube[nCube - 1].transform.position;
-                Cube[nCube].transform.Translate(0, 0.5f, 0);
+                Cubes[nCube].transform.localPosition = Cubes[nCube - 1].transform.position;
+                Cubes[nCube].transform.Translate(0, 0.5f, 0);
             }
 
-            Cube[nCube].transform.localRotation = Quaternion.identity;
+            Cubes[nCube].transform.localRotation = Quaternion.identity;
         }
 
         public void CheckCollision(int nCube)
         {
             if (nCube > 1)
             {
-                if (Cube[nCube - 1].transform.position.x > Cube[nCube - 2].transform.position.x - 1.0f && Cube[nCube - 1].transform.position.x < Cube[nCube - 2].transform.position.x + 1.0f)
+                if (Cubes[nCube - 1].transform.position.x > Cubes[nCube - 2].transform.position.x - 1.0f && Cubes[nCube - 1].transform.position.x < Cubes[nCube - 2].transform.position.x + 1.0f)
                 {
                     xstate = true;
-                    Debug.Log("nCube : " + nCube);
-                    Debug.Log("X : True");
                 }
                 else
                 {
                     xstate = false;
-                    Debug.Log("X : False");
                 }
-
-                if (Cube[nCube - 1].transform.position.z > Cube[nCube - 2].transform.position.z - 1.0f && Cube[nCube - 1].transform.position.z < Cube[nCube - 2].transform.position.z + 1.0f)
+          
+                if (Cubes[nCube - 1].transform.position.z > Cubes[nCube - 2].transform.position.z - 1.0f && Cubes[nCube - 1].transform.position.z < Cubes[nCube - 2].transform.position.z + 1.0f)
                 {
                     zstate = true;
-                    Debug.Log("Z : True");
                 }
 
                 else
                 {
                     zstate = false;
-                    Debug.Log("Z : False");
                 }
             }
         }
 
+        public void Destory()
+        {
+            Cards.RemoveAt(0);
+            
+            Destroy(Cubes[0]);
+
+            Cubes.RemoveAt(0);
+        }
     }
 
     /*
@@ -138,7 +141,7 @@ public class GameManager : MonoBehaviour
 
         public void selectCard()
         {
-            Debug.Log(CardDeck.Count);
+            //Debug.Log(CardDeck.Count);
             CardDeck.RemoveAt(0);
         }
 
@@ -153,7 +156,7 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    int nCube = 0;
+    public int nCube = 0;
 
     public bool xState, zState;
     bool fState;
@@ -170,8 +173,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         QDeck = new Deck(true);
-        for (int i = 0; i < 5; i++)
-            Debug.Log(QDeck.getCards()[i]);
         WDeck = new Deck(true);
         EDeck = new Deck(false);
         RDeck = new Deck(false);
@@ -182,7 +183,6 @@ public class GameManager : MonoBehaviour
 
         xState = false;
         zState = false;
-
     }
 
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
@@ -222,17 +222,6 @@ public class GameManager : MonoBehaviour
         else
             image.GetComponent<Image>().overrideSprite = cardImage[RDeck.getLastCard() / 2];
     }
-    /*
-    bool isColliding(float pos1, float pos2)
-    {
-        if (pos1 > pos2 - 1.0f && pos1 < pos2 + 1.0f)
-        {
-            return true;
-        }
-        else
-            return false;
-    }
-    */
     
     void Ingame()
     {   
@@ -245,9 +234,9 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        else
+        else   // In game
         {
-            if (state)
+            if (state == true)
             {
                 if (Input.GetKeyDown(KeyCode.Q) && QDeck.getCountCard() > 0)
                 {
@@ -288,7 +277,9 @@ public class GameManager : MonoBehaviour
 
             else
             {
+                //Debug.Log("nCube : " + nCube);
                 CMG.CheckCollision(nCube);
+                //Debug.Log("b");
 
                 if (Input.GetKeyDown(KeyCode.Space) && fState == false)
                 {
@@ -297,6 +288,12 @@ public class GameManager : MonoBehaviour
                         state = true;
                     }
                 }
+            }
+
+            if(nCube > 5)
+            {
+                nCube--;
+                CMG.Destory();
             }
         }
     }
