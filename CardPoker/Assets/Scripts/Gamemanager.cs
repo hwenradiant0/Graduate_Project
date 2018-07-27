@@ -17,8 +17,20 @@ public class GameManager : MonoBehaviour
         bool xstate;
         bool zstate;
 
-        public bool getxState() { return xstate; }
-        public bool getzState() { return zstate; }
+        public bool getxState()
+        {
+            if (Cubes.Count <= 1)
+                return true;
+            else
+                return xstate;
+        }
+        public bool getzState()
+        {
+            if (Cubes.Count <= 1)
+                return true;
+            else
+                return zstate;
+        }
 
         private List<GameObject> Cubes = new List<GameObject>();
 
@@ -26,15 +38,15 @@ public class GameManager : MonoBehaviour
         {
         }
 
-        public void InputCard(string Type, int Num)
+        public void InputCard(string Type, int Num, string Color)
         {
-            Cards.Add(new Card { CardType = Type, CardNum = Num });
+            Cards.Add(new Card { CardType = Type, CardNum = Num, CardColor = Color});
 
-            Debug.Log("Type : " + Cards[Cards.Count-1].CardType);
-            Debug.Log("Num : " + Cards[Cards.Count-1].CardNum);
+            //Debug.Log("Type : " + Cards[Cards.Count-1].CardType);
+            //Debug.Log("Num : " + Cards[Cards.Count-1].CardNum);
         }
 
-        public void CreateCube(GameObject[] Cube_Type1, GameObject[] Cube_Type2, int nCube)
+        public void CreateCube(GameObject[] Cube_Type1, GameObject[] Cube_Type2)
         {
             if (Cards[Cards.Count - 1].CardType == "Q" || Cards[Cards.Count - 1].CardType == "E")
             {
@@ -45,22 +57,25 @@ public class GameManager : MonoBehaviour
                 Cubes.Add(GameObject.Instantiate(Cube_Type2[Cards[Cards.Count - 1].CardNum]));
             }
 
-            if (nCube == 0)
-                Cubes[nCube].transform.localPosition = new Vector3(0, 1.0f, 0);
+            if (Cubes.Count-1 == 0)
+            {
+                Debug.Log("a" + Cubes.Count);
+                Cubes[Cubes.Count-1].transform.localPosition = new Vector3(0, 1.0f, 0);
+            }
             else
             {
-                Cubes[nCube].transform.localPosition = Cubes[nCube - 1].transform.position;
-                Cubes[nCube].transform.Translate(0, 0.5f, 0);
+                Cubes[Cubes.Count-1].transform.localPosition = Cubes[Cubes.Count - 2].transform.position;
+                Cubes[Cubes.Count-1].transform.Translate(0, 0.5f, 0);
             }
 
-            Cubes[nCube].transform.localRotation = Quaternion.identity;
+            Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
         }
 
-        public void CheckCollision(int nCube)
+        public void CheckCollision()
         {
-            if (nCube > 1)
+            if (Cubes.Count > 1)
             {
-                if (Cubes[nCube - 1].transform.position.x > Cubes[nCube - 2].transform.position.x - 1.0f && Cubes[nCube - 1].transform.position.x < Cubes[nCube - 2].transform.position.x + 1.0f)
+                if (Cubes[Cubes.Count - 1].transform.position.x > Cubes[Cubes.Count - 2].transform.position.x - 1.0f && Cubes[Cubes.Count - 1].transform.position.x < Cubes[Cubes.Count - 2].transform.position.x + 1.0f)
                 {
                     xstate = true;
                 }
@@ -69,7 +84,7 @@ public class GameManager : MonoBehaviour
                     xstate = false;
                 }
           
-                if (Cubes[nCube - 1].transform.position.z > Cubes[nCube - 2].transform.position.z - 1.0f && Cubes[nCube - 1].transform.position.z < Cubes[nCube - 2].transform.position.z + 1.0f)
+                if (Cubes[Cubes.Count - 1].transform.position.z > Cubes[Cubes.Count - 2].transform.position.z - 1.0f && Cubes[Cubes.Count - 1].transform.position.z < Cubes[Cubes.Count - 2].transform.position.z + 1.0f)
                 {
                     zstate = true;
                 }
@@ -81,13 +96,36 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        public void Destory()
+        public void CubeDestroy()
         {
-            Cards.RemoveAt(0);
-            
-            Destroy(Cubes[0]);
+            ////0번째 카드 1장을 없앨때
+            //if (Cubes.Count > 5)
+            //{
+            //    Cards.RemoveAt(0);
 
-            Cubes.RemoveAt(0);
+            //    Destroy(Cubes[0]);
+
+            //    Cubes.RemoveAt(0);
+            //}
+
+            if (Cubes.Count > 1)
+            {
+                Debug.Log(Cards.Count);
+                if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)
+                {
+                    if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)
+                    {
+                        int temp = Cards.Count;
+                        Cards.RemoveRange(temp - 2, 2);
+
+                        Destroy(Cubes[temp - 2],0.1f);
+                        Destroy(Cubes[temp - 1],0.1f);
+
+                        Cubes.RemoveRange(temp - 2, 2);
+                    }
+                }
+            }
+
         }
     }
 
@@ -104,7 +142,7 @@ public class GameManager : MonoBehaviour
     {
         public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
         public int          CardNum;
-        
+        public string       CardColor;
     }
 
     public class Deck
@@ -156,8 +194,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public int nCube = 0;
-
     public bool xState, zState;
     bool fState;
     bool state;
@@ -240,45 +276,42 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Q) && QDeck.getCountCard() > 0)
                 {
-                    CMG.InputCard("Q", QDeck.getLastCard());
-                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    CMG.InputCard("Q", QDeck.getLastCard(), "Black");
+                    CMG.CreateCube(X_Cubes, Z_Cubes);
                     QDeck.selectCard();
-                    nCube++;
                     state = false;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.W) && WDeck.getCountCard() > 0)
                 {
-                    CMG.InputCard("W", WDeck.getCards()[0]);
-                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    CMG.InputCard("W", WDeck.getCards()[0], "Red");
+                    CMG.CreateCube(X_Cubes, Z_Cubes);
                     WDeck.selectCard();
-                    nCube++;
                     state = false;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.E) && EDeck.getCountCard() > 0)
                 {
-                    CMG.InputCard("E", EDeck.getCards()[0]);
-                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    CMG.InputCard("E", EDeck.getCards()[0], "Black");
+                    CMG.CreateCube(X_Cubes, Z_Cubes);
                     EDeck.selectCard();
-                    nCube++;
                     state = false;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.R) && RDeck.getCountCard() > 0)
                 {
-                    CMG.InputCard("R", RDeck.getCards()[0]);
-                    CMG.CreateCube(X_Cubes, Z_Cubes, nCube);
+                    CMG.InputCard("R", RDeck.getCards()[0], "Red");
+                    CMG.CreateCube(X_Cubes, Z_Cubes);
                     RDeck.selectCard();
-                    nCube++;
                     state = false;
                 }
+                
             }
 
             else
             {
                 //Debug.Log("nCube : " + nCube);
-                CMG.CheckCollision(nCube);
+                CMG.CheckCollision();
                 //Debug.Log("b");
 
                 if (Input.GetKeyDown(KeyCode.Space) && fState == false)
@@ -287,30 +320,17 @@ public class GameManager : MonoBehaviour
                     {
                         state = true;
                     }
+                    CMG.CubeDestroy();
                 }
             }
-
-            if(nCube > 5)
-            {
-                nCube--;
-                CMG.Destory();
-            }
+            
         }
     }
 
     void Collision_Cube()
     {
-        if (nCube <= 1)
-        {
-            xState = true;
-            zState = true;
-        }
-
-        else
-        {
-            xState = CMG.getxState();
-            zState = CMG.getzState();
-        }
+        xState = CMG.getxState();
+        zState = CMG.getzState();
     }
 
     // Update is called once per frame
