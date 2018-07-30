@@ -6,10 +6,11 @@ public class Cube1 : MonoBehaviour {
 
     GameManager gamemanager;
     
-    Vector3 temp;
     int a = 0;
 
     int CubeNum;
+
+    float MoveSpeed = 1.0f;
 
     public Color[] color;
     Material m_Material;
@@ -57,11 +58,11 @@ public class Cube1 : MonoBehaviour {
             KinematicOn();
         }
 
-        if (temp.x >= 2.5f)
+        if (this.transform.position.x >= 2.5f)
         {
             a = 1;
         }
-        else if (temp.x <= -2.5f)
+        else if (this.transform.position.x <= -2.5f)
         {
             a = 0;
         }
@@ -69,10 +70,13 @@ public class Cube1 : MonoBehaviour {
         switch (a)
         {
             case 0:
-                temp.x = temp.x + 1 * Time.deltaTime;
+                this.transform.position = this.transform.position + transform.right * MoveSpeed * Time.deltaTime;
                 break;
             case 1:
-                temp.x = temp.x - 1 * Time.deltaTime;
+                this.transform.position = this.transform.position - transform.right * MoveSpeed * Time.deltaTime;
+                break;
+            case 2:
+                MoveSpeed = 0;
                 break;
         }
 
@@ -100,16 +104,11 @@ public class Cube1 : MonoBehaviour {
         {
             m_Material.color = color[2];
         }
-
-        transform.localPosition = temp;
     }
 
     // Update is called once per frame
     void Update ()
     {
-        temp = transform.localPosition;
-        transform.localPosition = temp;
-
         moveCube();
     }
 }

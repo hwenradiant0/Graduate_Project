@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,26 +66,68 @@ public class GameManager : MonoBehaviour
             else
             {
                 Cubes[Cubes.Count-1].transform.localPosition = Cubes[Cubes.Count - 2].transform.position;
+                Cubes[Cubes.Count - 1].transform.localScale = Cubes[Cubes.Count - 2].transform.localScale;
                 Cubes[Cubes.Count-1].transform.Translate(0, 0.5f, 0);
             }
 
             Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
         }
 
+        public void ResizeCube()
+        {
+            if (Cubes.Count>1)
+            {
+                float hangover = Cubes[Cubes.Count - 1].transform.position.x - Cubes[Cubes.Count - 2].transform.position.x;
+
+                float direction;
+
+                if (hangover > 0)
+                    direction = 1.0f;
+                else
+                    direction = -1.0f;
+
+            SplitCubeOnX(hangover, direction);
+
+            }
+        }
+
+        /*
+         * transform.position.z             :   Cubes[Cubes.Count - 2].transform.position.x
+         * LastCube.transform.position.z    :   Cubes[Cubes.Count - 1].transform.position.x
+         */
+
+        private void SplitCubeOnX(float hangover, float direction)
+        {
+            float newXSize = Cubes[Cubes.Count - 2].transform.localScale.x - Mathf.Abs(hangover);
+            float fallingBlockSize = Cubes[Cubes.Count - 1].transform.localScale.x - newXSize;
+
+            float newXPosition = Cubes[Cubes.Count - 2].transform.position.x + (hangover / 2);
+
+            Cubes[Cubes.Count - 1].transform.localScale = new Vector3(newXSize, Cubes[Cubes.Count - 1].transform.localScale.y, Cubes[Cubes.Count - 1].transform.localScale.z);
+            Cubes[Cubes.Count - 1].transform.position = new Vector3(newXPosition, Cubes[Cubes.Count - 1].transform.position.y, Cubes[Cubes.Count - 1].transform.position.z);
+
+            float cubeEdge = Cubes[Cubes.Count - 1].transform.position.x + (newXSize / 2.0f * direction);
+            float fallingBlockXPosition = cubeEdge + fallingBlockSize / 2.0f * direction;
+
+            //SpawnDropCube(fallingBlockXPosition, fallingBlockSize);
+        }
+
         public void CheckCollision()
         {
             if (Cubes.Count > 1)
             {
-                if (Cubes[Cubes.Count - 1].transform.position.x > Cubes[Cubes.Count - 2].transform.position.x - 1.0f && Cubes[Cubes.Count - 1].transform.position.x < Cubes[Cubes.Count - 2].transform.position.x + 1.0f)
+                if (Cubes[Cubes.Count - 1].transform.position.x > Cubes[Cubes.Count - 2].transform.position.x - Cubes[Cubes.Count-1].transform.localScale.x && Cubes[Cubes.Count - 1].transform.position.x < Cubes[Cubes.Count - 2].transform.position.x + Cubes[Cubes.Count - 1].transform.localScale.x)
                 {
                     xstate = true;
+                    Debug.Log("true");
                 }
                 else
                 {
                     xstate = false;
+                    Debug.Log("false");
                 }
           
-                if (Cubes[Cubes.Count - 1].transform.position.z > Cubes[Cubes.Count - 2].transform.position.z - 1.0f && Cubes[Cubes.Count - 1].transform.position.z < Cubes[Cubes.Count - 2].transform.position.z + 1.0f)
+                if (Cubes[Cubes.Count - 1].transform.position.z > Cubes[Cubes.Count - 2].transform.position.z - Cubes[Cubes.Count - 1].transform.localScale.x && Cubes[Cubes.Count - 1].transform.position.z < Cubes[Cubes.Count - 2].transform.position.z + Cubes[Cubes.Count - 1].transform.localScale.x)
                 {
                     zstate = true;
                 }
@@ -111,7 +154,7 @@ public class GameManager : MonoBehaviour
             if (Cubes.Count > 1)
             {
                 Debug.Log(Cards.Count);
-                if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)
+                if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)           ///////////////////// 같은 색 일때
                 {
                     if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)
                     {
@@ -137,8 +180,8 @@ public class GameManager : MonoBehaviour
         R = 4
     };
     */
-    
-    public class Card
+
+        public class Card
     {
         public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
         public int          CardNum;
@@ -164,7 +207,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < CardDeck.Count-1; i++)
             {
-                int shuffle = Random.Range(0, CardDeck.Count -2 - i);
+                int shuffle = UnityEngine.Random.Range(0, CardDeck.Count -2 - i);
                 int temp = shuffleList[CardDeck.Count -1 - i];
 
                 shuffleList[CardDeck.Count-1 - i] = shuffleList[shuffle];
@@ -197,6 +240,7 @@ public class GameManager : MonoBehaviour
     public bool xState, zState;
     bool fState;
     bool state;
+    bool test;
 
     Deck QDeck = null;
     Deck WDeck = null;
@@ -219,8 +263,9 @@ public class GameManager : MonoBehaviour
 
         xState = false;
         zState = false;
+        test = true;
     }
-
+    
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
     {
         if (QDeck.getCountCard() < 1)
@@ -305,7 +350,9 @@ public class GameManager : MonoBehaviour
                     RDeck.selectCard();
                     state = false;
                 }
-                
+                if(test == true)
+                    CMG.ResizeCube();
+                test = false;
             }
 
             else
@@ -319,6 +366,7 @@ public class GameManager : MonoBehaviour
                     if (xState == true && zState == true)
                     {
                         state = true;
+                        test = true;
                     }
                     CMG.CubeDestroy();
                 }
