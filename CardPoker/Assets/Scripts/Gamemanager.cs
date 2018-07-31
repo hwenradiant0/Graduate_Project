@@ -73,11 +73,16 @@ public class GameManager : MonoBehaviour
             Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
         }
 
-        public void ResizeCube()
+        public void ResizeCube(bool card)
         {
+            Debug.Log("resizing");
             if (Cubes.Count>1)
             {
-                float hangover = Cubes[Cubes.Count - 1].transform.position.x - Cubes[Cubes.Count - 2].transform.position.x;
+                float hangover;
+                if (card == true)
+                    hangover = Cubes[Cubes.Count - 1].transform.position.x - Cubes[Cubes.Count - 2].transform.position.x;
+                else
+                    hangover = Cubes[Cubes.Count - 1].transform.position.z - Cubes[Cubes.Count - 2].transform.position.z;
 
                 float direction;
 
@@ -86,7 +91,10 @@ public class GameManager : MonoBehaviour
                 else
                     direction = -1.0f;
 
-            SplitCubeOnX(hangover, direction);
+                if (card == true)
+                    SplitCubeOnX(hangover, direction);
+                else
+                    SplitCubeOnZ(hangover, direction);
 
             }
         }
@@ -107,6 +115,22 @@ public class GameManager : MonoBehaviour
             Cubes[Cubes.Count - 1].transform.position = new Vector3(newXPosition, Cubes[Cubes.Count - 1].transform.position.y, Cubes[Cubes.Count - 1].transform.position.z);
 
             float cubeEdge = Cubes[Cubes.Count - 1].transform.position.x + (newXSize / 2.0f * direction);
+            float fallingBlockXPosition = cubeEdge + fallingBlockSize / 2.0f * direction;
+
+            //SpawnDropCube(fallingBlockXPosition, fallingBlockSize);
+        }
+
+        private void SplitCubeOnZ(float hangover, float direction)
+        {
+            float newZSize = Cubes[Cubes.Count - 2].transform.localScale.z - Mathf.Abs(hangover);
+            float fallingBlockSize = Cubes[Cubes.Count - 1].transform.localScale.z - newZSize;
+
+            float newZPosition = Cubes[Cubes.Count - 2].transform.position.z + (hangover / 2);
+
+            Cubes[Cubes.Count - 1].transform.localScale = new Vector3(Cubes[Cubes.Count - 1].transform.localScale.x, Cubes[Cubes.Count - 1].transform.localScale.y, newZSize);
+            Cubes[Cubes.Count - 1].transform.position = new Vector3(Cubes[Cubes.Count - 1].transform.position.x, Cubes[Cubes.Count - 1].transform.position.y, newZPosition);
+
+            float cubeEdge = Cubes[Cubes.Count - 1].transform.position.z + (newZSize / 2.0f * direction);
             float fallingBlockXPosition = cubeEdge + fallingBlockSize / 2.0f * direction;
 
             //SpawnDropCube(fallingBlockXPosition, fallingBlockSize);
@@ -240,6 +264,7 @@ public class GameManager : MonoBehaviour
     public bool xState, zState;
     bool fState;
     bool state;
+    bool recentCard;
     bool test;
 
     Deck QDeck = null;
@@ -325,6 +350,7 @@ public class GameManager : MonoBehaviour
                     CMG.CreateCube(X_Cubes, Z_Cubes);
                     QDeck.selectCard();
                     state = false;
+                    recentCard = true;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.W) && WDeck.getCountCard() > 0)
@@ -333,6 +359,7 @@ public class GameManager : MonoBehaviour
                     CMG.CreateCube(X_Cubes, Z_Cubes);
                     WDeck.selectCard();
                     state = false;
+                    recentCard = false;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.E) && EDeck.getCountCard() > 0)
@@ -341,6 +368,7 @@ public class GameManager : MonoBehaviour
                     CMG.CreateCube(X_Cubes, Z_Cubes);
                     EDeck.selectCard();
                     state = false;
+                    recentCard = true;
                 }
 
                 else if (Input.GetKeyDown(KeyCode.R) && RDeck.getCountCard() > 0)
@@ -349,9 +377,11 @@ public class GameManager : MonoBehaviour
                     CMG.CreateCube(X_Cubes, Z_Cubes);
                     RDeck.selectCard();
                     state = false;
+                    recentCard = false;
                 }
-                if(test == true)
-                    CMG.ResizeCube();
+
+                if (test == true)
+                    CMG.ResizeCube(recentCard);
                 test = false;
             }
 
