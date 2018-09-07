@@ -177,18 +177,104 @@ public class GameManager : MonoBehaviour
 
             if (Cubes.Count > 1)
             {
-                Debug.Log(Cards.Count);
                 if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)           ///////////////////// 같은 색 일때
                 {
-                    if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)
+                    if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)  // 연속된 수 일때 제거
                     {
+                        Debug.Log("1");
                         int temp = Cards.Count;
                         Cards.RemoveRange(temp - 2, 2);
 
-                        Destroy(Cubes[temp - 2],0.1f);
-                        Destroy(Cubes[temp - 1],0.1f);
+                        Destroy(Cubes[temp - 2], 0.1f);
+                        Destroy(Cubes[temp - 1], 0.1f);
 
                         Cubes.RemoveRange(temp - 2, 2);
+                    }
+
+                    else if (Cubes.Count > 2)
+                    {
+                        if(Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor)
+                        {
+                            int temp = Cards.Count;
+                            Cards.RemoveRange(temp - 3, 3);
+
+                            Destroy(Cubes[temp - 3], 0.1f);
+                            Destroy(Cubes[temp - 2], 0.1f);
+                            Destroy(Cubes[temp - 1], 0.1f);
+
+                            Cubes.RemoveRange(temp - 3, 3);
+                            /*
+                            if (Cards[Cards.Count - 3].CardNum % 2 == 0)
+                            {
+                                Debug.Log("2-1");
+                                Debug.Log(Cards[Cards.Count - 3].CardNum);
+                                if (Cards[Cards.Count - 2].CardNum % 2 == 0)
+                                {
+                                    Debug.Log("2-2");
+                                    Debug.Log(Cards[Cards.Count - 2].CardNum);
+                                    if (Cards[Cards.Count - 1].CardNum % 2 == 0)
+                                    {
+                                        Debug.Log("2");
+                                        Debug.Log(Cards[Cards.Count - 1].CardNum);
+                                        int temp = Cards.Count;
+                                        Cards.RemoveRange(temp - 3, 3);
+
+                                        Destroy(Cubes[temp - 3], 0.1f);
+                                        Destroy(Cubes[temp - 2], 0.1f);
+                                        Destroy(Cubes[temp - 1], 0.1f);
+
+                                        Cubes.RemoveRange(temp - 3, 3);
+                                    }
+                                }
+                            }
+
+                            else if (Cards[Cards.Count - 3].CardNum % 2 == 1)
+                            {
+                                Debug.Log("3-1");
+                                Debug.Log(Cards[Cards.Count - 3].CardNum);
+                                if (Cards[Cards.Count - 2].CardNum % 2 == 1)
+                                {
+                                    Debug.Log("3-2");
+                                    Debug.Log(Cards[Cards.Count - 2].CardNum);
+                                    if (Cards[Cards.Count - 1].CardNum % 2 == 1)
+                                    {
+                                        Debug.Log("3");
+                                        Debug.Log(Cards[Cards.Count - 1].CardNum);
+                                    }
+                                }
+                            }
+                            */
+                        }
+                    }
+                }
+            }
+
+            else if(Cubes.Count>2)
+            {
+                if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)           ///////////////////// 같은 색 일때
+                {
+                    if (Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor)           ///////////////////// 같은 색 일때
+                    {
+                        if (Cards[Cards.Count - 3].CardNum % 2 == 0)
+                        {
+                            Debug.Log("2-1");
+                            if (Cards[Cards.Count - 2].CardNum % 2 == 0)
+                            {
+                                Debug.Log("2-2");
+                                if (Cards[Cards.Count - 1].CardNum % 2 == 0)
+                                {
+                                    Debug.Log("2");
+                                    int temp = Cards.Count;
+                                    Cards.RemoveRange(temp - 3, 3);
+
+                                    Destroy(Cubes[temp - 3], 0.1f);
+                                    Destroy(Cubes[temp - 2], 0.1f);
+                                    Destroy(Cubes[temp - 1], 0.1f);
+
+                                    Cubes.RemoveRange(temp - 3, 3);
+                                }
+                            }
+                        }
                     }
                 }
             }
