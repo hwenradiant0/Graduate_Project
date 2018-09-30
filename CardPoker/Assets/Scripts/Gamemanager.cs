@@ -11,12 +11,19 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public GameObject[] Z_Cubes = null;
 
+    public int numCube = 0;
+
     public class CardManager
     {
         List<Card> Cards = new List<Card>();
 
         bool xstate;
         bool zstate;
+
+        public int numCube()
+        {
+            return Cubes.Count;
+        }
 
         public bool getxState()
         {
@@ -25,6 +32,7 @@ public class GameManager : MonoBehaviour
             else
                 return xstate;
         }
+
         public bool getzState()
         {
             if (Cubes.Count <= 1)
@@ -34,6 +42,7 @@ public class GameManager : MonoBehaviour
         }
 
         private List<GameObject> Cubes = new List<GameObject>();
+        
 
         public CardManager()
         {
@@ -60,98 +69,82 @@ public class GameManager : MonoBehaviour
 
             if (Cubes.Count-1 == 0)
             {
-                Debug.Log("a" + Cubes.Count);
-                Cubes[Cubes.Count-1].transform.localPosition = new Vector3(0, 1.0f, 0);
+                Cubes[Cubes.Count-1].transform.localPosition = new Vector3(0.0f,0.1f,0.0f);
             }
             else
             {
-                Cubes[Cubes.Count-1].transform.localPosition = Cubes[Cubes.Count - 2].transform.position;
-                Cubes[Cubes.Count - 1].transform.localScale = Cubes[Cubes.Count - 2].transform.localScale;
-                Cubes[Cubes.Count-1].transform.Translate(0, 0.5f, 0);
+                if (Cards[Cards.Count - 1].CardType == "Q" || Cards[Cards.Count - 1].CardType == "E")
+                {
+                    Cubes[Cubes.Count - 1].transform.localPosition = new Vector3(Cubes[Cubes.Count - 2].transform.position.x-Cubes[Cubes.Count-2].transform.localScale.x, Cubes[Cubes.Count - 2].transform.position.y + 0.1f, Cubes[Cubes.Count - 2].transform.position.z);
+                    Cubes[Cubes.Count - 1].transform.localScale = Cubes[Cubes.Count - 2].transform.localScale;
+                }
+                else
+                {
+                    Cubes[Cubes.Count - 1].transform.localPosition = new Vector3(Cubes[Cubes.Count - 2].transform.position.x, Cubes[Cubes.Count - 2].transform.position.y + 0.1f, Cubes[Cubes.Count - 2].transform.position.z- Cubes[Cubes.Count - 2].transform.localScale.z);
+                    Cubes[Cubes.Count - 1].transform.localScale = Cubes[Cubes.Count - 2].transform.localScale;
+                }
             }
 
             Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
+
+            //ystate = false;
         }
 
         public void ResizeCube(bool card)
         {
-            Debug.Log("resizing");
             if (Cubes.Count>1)
             {
                 float hangover;
+
                 if (card == true)
+                {
                     hangover = Cubes[Cubes.Count - 1].transform.position.x - Cubes[Cubes.Count - 2].transform.position.x;
+                    SplitCubeOnX(hangover);
+                }
                 else
+                {
                     hangover = Cubes[Cubes.Count - 1].transform.position.z - Cubes[Cubes.Count - 2].transform.position.z;
-
-                float direction;
-
-                if (hangover > 0)
-                    direction = 1.0f;
-                else
-                    direction = -1.0f;
-
-                if (card == true)
-                    SplitCubeOnX(hangover, direction);
-                else
-                    SplitCubeOnZ(hangover, direction);
-
+                    SplitCubeOnZ(hangover);
+                }
             }
         }
 
-        /*
-         * transform.position.z             :   Cubes[Cubes.Count - 2].transform.position.x
-         * LastCube.transform.position.z    :   Cubes[Cubes.Count - 1].transform.position.x
-         */
-
-        private void SplitCubeOnX(float hangover, float direction)
+        private void SplitCubeOnX(float hangover)
         {
             float newXSize = Cubes[Cubes.Count - 2].transform.localScale.x - Mathf.Abs(hangover);
-            float fallingBlockSize = Cubes[Cubes.Count - 1].transform.localScale.x - newXSize;
 
             float newXPosition = Cubes[Cubes.Count - 2].transform.position.x + (hangover / 2);
 
             Cubes[Cubes.Count - 1].transform.localScale = new Vector3(newXSize, Cubes[Cubes.Count - 1].transform.localScale.y, Cubes[Cubes.Count - 1].transform.localScale.z);
             Cubes[Cubes.Count - 1].transform.position = new Vector3(newXPosition, Cubes[Cubes.Count - 1].transform.position.y, Cubes[Cubes.Count - 1].transform.position.z);
-
-            float cubeEdge = Cubes[Cubes.Count - 1].transform.position.x + (newXSize / 2.0f * direction);
-            float fallingBlockXPosition = cubeEdge + fallingBlockSize / 2.0f * direction;
-
-            //SpawnDropCube(fallingBlockXPosition, fallingBlockSize);
         }
 
-        private void SplitCubeOnZ(float hangover, float direction)
+        private void SplitCubeOnZ(float hangover)
         {
             float newZSize = Cubes[Cubes.Count - 2].transform.localScale.z - Mathf.Abs(hangover);
-            float fallingBlockSize = Cubes[Cubes.Count - 1].transform.localScale.z - newZSize;
 
             float newZPosition = Cubes[Cubes.Count - 2].transform.position.z + (hangover / 2);
 
             Cubes[Cubes.Count - 1].transform.localScale = new Vector3(Cubes[Cubes.Count - 1].transform.localScale.x, Cubes[Cubes.Count - 1].transform.localScale.y, newZSize);
             Cubes[Cubes.Count - 1].transform.position = new Vector3(Cubes[Cubes.Count - 1].transform.position.x, Cubes[Cubes.Count - 1].transform.position.y, newZPosition);
-
-            float cubeEdge = Cubes[Cubes.Count - 1].transform.position.z + (newZSize / 2.0f * direction);
-            float fallingBlockXPosition = cubeEdge + fallingBlockSize / 2.0f * direction;
-
-            //SpawnDropCube(fallingBlockXPosition, fallingBlockSize);
         }
 
         public void CheckCollision()
         {
             if (Cubes.Count > 1)
             {
-                if (Cubes[Cubes.Count - 1].transform.position.x > Cubes[Cubes.Count - 2].transform.position.x - Cubes[Cubes.Count-1].transform.localScale.x && Cubes[Cubes.Count - 1].transform.position.x < Cubes[Cubes.Count - 2].transform.position.x + Cubes[Cubes.Count - 1].transform.localScale.x)
+                if (Cubes[Cubes.Count - 1].transform.position.x > Cubes[Cubes.Count - 2].transform.position.x - Cubes[Cubes.Count - 1].transform.localScale.x && 
+                    Cubes[Cubes.Count - 1].transform.position.x < Cubes[Cubes.Count - 2].transform.position.x + Cubes[Cubes.Count - 1].transform.localScale.x)
                 {
                     xstate = true;
-                    Debug.Log("true");
                 }
                 else
                 {
                     xstate = false;
-                    Debug.Log("false");
                 }
           
-                if (Cubes[Cubes.Count - 1].transform.position.z > Cubes[Cubes.Count - 2].transform.position.z - Cubes[Cubes.Count - 1].transform.localScale.x && Cubes[Cubes.Count - 1].transform.position.z < Cubes[Cubes.Count - 2].transform.position.z + Cubes[Cubes.Count - 1].transform.localScale.x)
+                if (Cubes[Cubes.Count - 1].transform.position.z > Cubes[Cubes.Count - 2].transform.position.z - Cubes[Cubes.Count - 1].transform.localScale.z && 
+                    Cubes[Cubes.Count - 1].transform.position.z < Cubes[Cubes.Count - 2].transform.position.z + Cubes[Cubes.Count - 1].transform.localScale.z)
                 {
                     zstate = true;
                 }
@@ -163,122 +156,69 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        void RemoveCube(int num)
+        {
+            int temp = Cards.Count;
+
+            Cards.RemoveRange(temp - num, num);
+
+            for (int i=num; i>0; i--)
+            {
+                Destroy(Cubes[temp - i], 0.1f);
+            }
+            Cubes.RemoveRange(temp - num, num);
+        }
+
         public void CubeDestroy()
         {
-            ////0번째 카드 1장을 없앨때
-            //if (Cubes.Count > 5)
-            //{
-            //    Cards.RemoveAt(0);
-
-            //    Destroy(Cubes[0]);
-
-            //    Cubes.RemoveAt(0);
-            //}
-
             if (Cubes.Count > 1)
             {
                 if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)           ///////////////////// 같은 색 일때
                 {
                     if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)  // 연속된 수 일때 제거
                     {
-                        Debug.Log("1");
-                        int temp = Cards.Count;
-                        Cards.RemoveRange(temp - 2, 2);
-
-                        Destroy(Cubes[temp - 2], 0.1f);
-                        Destroy(Cubes[temp - 1], 0.1f);
-
-                        Cubes.RemoveRange(temp - 2, 2);
+                        RemoveCube(2);
+                        Score.scoreValue += 2;
+                        Debug.Log("case1");
                     }
 
                     else if (Cubes.Count > 2)
                     {
-                        if(Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor)
+                        if(Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor) // 세개가 같은 색 일때
                         {
-                            int temp = Cards.Count;
-                            Cards.RemoveRange(temp - 3, 3);
-
-                            Destroy(Cubes[temp - 3], 0.1f);
-                            Destroy(Cubes[temp - 2], 0.1f);
-                            Destroy(Cubes[temp - 1], 0.1f);
-
-                            Cubes.RemoveRange(temp - 3, 3);
-                            /*
-                            if (Cards[Cards.Count - 3].CardNum % 2 == 0)
-                            {
-                                Debug.Log("2-1");
-                                Debug.Log(Cards[Cards.Count - 3].CardNum);
-                                if (Cards[Cards.Count - 2].CardNum % 2 == 0)
-                                {
-                                    Debug.Log("2-2");
-                                    Debug.Log(Cards[Cards.Count - 2].CardNum);
-                                    if (Cards[Cards.Count - 1].CardNum % 2 == 0)
-                                    {
-                                        Debug.Log("2");
-                                        Debug.Log(Cards[Cards.Count - 1].CardNum);
-                                        int temp = Cards.Count;
-                                        Cards.RemoveRange(temp - 3, 3);
-
-                                        Destroy(Cubes[temp - 3], 0.1f);
-                                        Destroy(Cubes[temp - 2], 0.1f);
-                                        Destroy(Cubes[temp - 1], 0.1f);
-
-                                        Cubes.RemoveRange(temp - 3, 3);
-                                    }
-                                }
-                            }
-
-                            else if (Cards[Cards.Count - 3].CardNum % 2 == 1)
-                            {
-                                Debug.Log("3-1");
-                                Debug.Log(Cards[Cards.Count - 3].CardNum);
-                                if (Cards[Cards.Count - 2].CardNum % 2 == 1)
-                                {
-                                    Debug.Log("3-2");
-                                    Debug.Log(Cards[Cards.Count - 2].CardNum);
-                                    if (Cards[Cards.Count - 1].CardNum % 2 == 1)
-                                    {
-                                        Debug.Log("3");
-                                        Debug.Log(Cards[Cards.Count - 1].CardNum);
-                                    }
-                                }
-                            }
-                            */
+                            RemoveCube(3);
+                            Score.scoreValue += 1;
+                            Debug.Log("case2");
                         }
                     }
                 }
-            }
 
-            else if(Cubes.Count>2)
-            {
-                if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 2].CardColor)           ///////////////////// 같은 색 일때
+                else // 다른 색 일때
                 {
-                    if (Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor)           ///////////////////// 같은 색 일때
+                    if (Cards[Cards.Count - 1].CardNum == Cards[Cards.Count - 2].CardNum) // 같은 숫자일때
                     {
-                        if (Cards[Cards.Count - 3].CardNum % 2 == 0)
+                        RemoveCube(2);
+                        Score.scoreValue += 2;
+                        Debug.Log("case3");
+                    }
+
+                    if (Cubes.Count > 2)
+                    {
+                        if (Cards[Cards.Count - 1].CardColor == Cards[Cards.Count - 3].CardColor)
                         {
-                            Debug.Log("2-1");
-                            if (Cards[Cards.Count - 2].CardNum % 2 == 0)
+                            if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1)
                             {
-                                Debug.Log("2-2");
-                                if (Cards[Cards.Count - 1].CardNum % 2 == 0)
+                                if (Cards[Cards.Count - 2].CardNum - Cards[Cards.Count - 3].CardNum == 1)
                                 {
-                                    Debug.Log("2");
-                                    int temp = Cards.Count;
-                                    Cards.RemoveRange(temp - 3, 3);
-
-                                    Destroy(Cubes[temp - 3], 0.1f);
-                                    Destroy(Cubes[temp - 2], 0.1f);
-                                    Destroy(Cubes[temp - 1], 0.1f);
-
-                                    Cubes.RemoveRange(temp - 3, 3);
+                                    RemoveCube(3);
+                                    Debug.Log("case4");
+                                    Score.scoreValue += 3;
                                 }
                             }
                         }
                     }
                 }
             }
-
         }
     }
 
@@ -291,7 +231,7 @@ public class GameManager : MonoBehaviour
     };
     */
 
-        public class Card
+    public class Card
     {
         public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
         public int          CardNum;
@@ -347,11 +287,10 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public bool xState, zState;
+    public bool xState, yState, zState;
     bool fState;
     bool state;
     bool recentCard;
-    bool test;
 
     Deck QDeck = null;
     Deck WDeck = null;
@@ -367,6 +306,7 @@ public class GameManager : MonoBehaviour
         WDeck = new Deck(true);
         EDeck = new Deck(false);
         RDeck = new Deck(false);
+
         CMG = new CardManager();
 
         fState = true;
@@ -374,7 +314,6 @@ public class GameManager : MonoBehaviour
 
         xState = false;
         zState = false;
-        test = true;
     }
     
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
@@ -385,6 +324,26 @@ public class GameManager : MonoBehaviour
         else
         {
             image.GetComponent<Image>().overrideSprite = cardImage[QDeck.getLastCard() / 2];
+        }
+    }
+
+    public void Resize()
+    {
+        CMG.CheckCollision();
+
+        if (Input.GetKeyDown(KeyCode.Space) && fState == false)
+        {
+            if (xState == true && zState == true)
+            {
+                if (recentCard == true)
+                    Cube1.CurrentCube.Stop();
+                else
+                    Cube2.CurrentCube.Stop();
+
+                state = true;
+                CMG.ResizeCube(recentCard);
+                CMG.CubeDestroy();
+            }
         }
     }
 
@@ -416,7 +375,9 @@ public class GameManager : MonoBehaviour
     }
     
     void Ingame()
-    {   
+    {
+        numCube = CMG.numCube();
+
         if (fState == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -466,28 +427,12 @@ public class GameManager : MonoBehaviour
                     recentCard = false;
                 }
 
-                if (test == true)
-                    CMG.ResizeCube(recentCard);
-                test = false;
             }
-
             else
             {
-                //Debug.Log("nCube : " + nCube);
-                CMG.CheckCollision();
-                //Debug.Log("b");
-
-                if (Input.GetKeyDown(KeyCode.Space) && fState == false)
-                {
-                    if (xState == true && zState == true)
-                    {
-                        state = true;
-                        test = true;
-                    }
-                    CMG.CubeDestroy();
-                }
+                Resize();
             }
-            
+
         }
     }
 

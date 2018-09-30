@@ -1,14 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Cube2 : MonoBehaviour
 {
+    public static Cube2 CurrentCube { get; private set; }
+
+    private void OnEnable()
+    {
+        CurrentCube = this;
+    }
+
     GameManager gamemanager;
 
-    Vector3 temp;
-    int a = 0;
+    int CubeNum;
 
+    float MoveSpeed;
 
     public Color[] color;
     Material m_Material;
@@ -16,65 +24,35 @@ public class Cube2 : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        MoveSpeed = 2.0f;
         gamemanager = GameObject.Find("GameManager").GetComponent<GameManager>();
         m_Material = GetComponent<Renderer>().material;
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
         GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    private void KinematicOn()
+    public void StopCube()
     {
-        GetComponent<Rigidbody>().isKinematic = true;
+        MoveSpeed = 0;
     }
 
-    private void Kinematicoff()
+    // Update is called once per frame
+    void Update()
     {
-        GetComponent<Rigidbody>().isKinematic = false;
-    }
+        this.transform.position = this.transform.position + transform.forward * MoveSpeed * Time.deltaTime;
 
-    void moveCube()
-    {
-        if (gamemanager.zState == true)
+        if (this.transform.position.z >= 2.5f)
         {
-            Kinematicoff();
+            MoveSpeed = -2.0f;
         }
 
+        else if (this.transform.position.z <= -2.5f)
+        {
+            MoveSpeed = 2.0f;
+        }
+
+        if (MoveSpeed == 0)
+            m_Material.color = color[2];
         else
-        {
-            KinematicOn();
-        }
-
-        if (temp.z >= 2.5f)
-        {
-            a = 1;
-        }
-        else if (temp.z <= -2.5f)
-        {
-            a = 0;
-        }
-
-        switch (a)
-        {
-            case 0:
-                temp.z = temp.z + 1 * Time.deltaTime;
-                break;
-            case 1:
-                temp.z = temp.z - 1 * Time.deltaTime;
-                break;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (gamemanager.zState == true) // 큐브가 만날때
-            {
-                a = 2;
-            }
-        }
-
-        if (a != 2) // 큐브가 움직일때
         {
             if (gamemanager.zState == true)
             {
@@ -85,21 +63,10 @@ public class Cube2 : MonoBehaviour
                 m_Material.color = color[1];
             }
         }
-
-        else // 큐브가 멈췄을때
-        {
-            m_Material.color = color[2];
-        }
-
-        transform.localPosition = temp;
     }
 
-    // Update is called once per frame
-    void Update()
+    internal void Stop()
     {
-        temp = transform.localPosition;
-        transform.localPosition = temp;
-
-        moveCube();
+        MoveSpeed = 0;
     }
 }
