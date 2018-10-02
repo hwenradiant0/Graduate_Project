@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using System.Diagnostics;
+
+using Debug = UnityEngine.Debug;
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
@@ -11,7 +15,23 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public GameObject[] Z_Cubes = null;
 
+    private Stopwatch sw = new Stopwatch();
+
+    public float delay;
+
+    private bool Keydownable;
+
+    public Radial_Slider slider;
+
     public int numCube = 0;
+
+    enum CardState
+    {
+        A = 0,
+        B
+    }
+
+    CardState cardState;
 
     public class CardManager
     {
@@ -314,6 +334,10 @@ public class GameManager : MonoBehaviour
 
         xState = false;
         zState = false;
+
+        slider.maxValue = delay;
+        slider.value = 0;
+        Keydownable = true;
     }
     
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
@@ -327,24 +351,96 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //public void Resize()
+    //{
+    //    CMG.CheckCollision();
+        
+    //    slider.value = sw.ElapsedMilliseconds / 1000;
+ 
+    //    if (fState == false && Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        if (xState == true && zState == true)
+    //        {
+    //            if (Keydownable == true)
+    //            {
+    //                if (recentCard == true)
+    //                    Cube1.CurrentCube.Stop();
+    //                else
+    //                    Cube2.CurrentCube.Stop();
+
+    //                state = true;
+    //                CMG.ResizeCube(recentCard);
+    //                CMG.CubeDestroy();
+    //            }
+    //        }
+
+    //        else
+    //        {
+    //            Keydownable = false;
+    //            StartCoroutine(OnUpdateRoutine());
+    //            //Timer();
+    //            //////////////////// 이부분
+    //        }
+    //    }
+    //}
+
     public void Resize()
     {
         CMG.CheckCollision();
-
-        if (Input.GetKeyDown(KeyCode.Space) && fState == false)
+        
+        if (fState == false && Input.GetKeyDown(KeyCode.Space))
         {
             if (xState == true && zState == true)
             {
-                if (recentCard == true)
-                    Cube1.CurrentCube.Stop();
-                else
-                    Cube2.CurrentCube.Stop();
+                if (Keydownable == true)
+                {
+                    if (recentCard == true)
+                        Cube1.CurrentCube.Stop();
+                    else
+                        Cube2.CurrentCube.Stop();
 
-                state = true;
-                CMG.ResizeCube(recentCard);
-                CMG.CubeDestroy();
+                    state = true;
+                    CMG.ResizeCube(recentCard);
+                    CMG.CubeDestroy();
+                }
+            }
+
+            else
+            {
+                Keydownable = false;
+                StartCoroutine(OnUpdateRoutine());
             }
         }
+    }
+
+    void Timer()
+    {
+        sw.Start();
+        if (sw.ElapsedMilliseconds > 5000)
+        {
+            Keydownable = true;
+
+            sw.Stop();
+            sw.Reset();
+        }
+    }
+
+    IEnumerator OnUpdateRoutine()
+    {
+        slider.maxValue = delay;
+        slider.value = 0;
+
+        Keydownable = false;
+
+        for (int i = 0; i < delay; i++)
+        {
+            slider.value = i;
+
+            yield return new WaitForSeconds(1);
+        }
+
+        Keydownable = true;
+        slider.value = delay;
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
@@ -377,7 +473,7 @@ public class GameManager : MonoBehaviour
     void Ingame()
     {
         numCube = CMG.numCube();
-
+        
         if (fState == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -426,7 +522,6 @@ public class GameManager : MonoBehaviour
                     state = false;
                     recentCard = false;
                 }
-
             }
             else
             {

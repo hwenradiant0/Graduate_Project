@@ -52,6 +52,7 @@ public class Cube1 : MonoBehaviour
 
         if (MoveSpeed == 0)
             m_Material.color = color[2];
+
         else
         {
             if (gamemanager.xState == true)
