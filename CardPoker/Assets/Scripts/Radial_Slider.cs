@@ -6,6 +6,8 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class Radial_Slider : MonoBehaviour
 {
+    public Image Open;
+
     public Image filled;
     public Text text;
 
@@ -16,7 +18,7 @@ public class Radial_Slider : MonoBehaviour
     {
         value = Mathf.Clamp(value, 0, maxValue);
         float amount = value / maxValue;
-
+        
         filled.fillAmount = amount;
         text.text = Mathf.RoundToInt(5-value).ToString();
     }

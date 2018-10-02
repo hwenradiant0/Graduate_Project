@@ -17,21 +17,12 @@ public class GameManager : MonoBehaviour
 
     private Stopwatch sw = new Stopwatch();
 
-    public float delay;
-
     private bool Keydownable;
+    private bool processcoroutine;
 
     public Radial_Slider slider;
 
     public int numCube = 0;
-
-    enum CardState
-    {
-        A = 0,
-        B
-    }
-
-    CardState cardState;
 
     public class CardManager
     {
@@ -242,15 +233,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /*
-    enum CardType{
-        Q = 1,
-        W = 2,
-        E = 3,
-        R = 4
-    };
-    */
-
     public class Card
     {
         public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
@@ -312,6 +294,8 @@ public class GameManager : MonoBehaviour
     bool state;
     bool recentCard;
 
+    IEnumerator coroutine;
+
     Deck QDeck = null;
     Deck WDeck = null;
     Deck EDeck = null;
@@ -335,9 +319,11 @@ public class GameManager : MonoBehaviour
         xState = false;
         zState = false;
 
-        slider.maxValue = delay;
-        slider.value = 0;
+        slider.maxValue = 5;
+        slider.value = 5;
         Keydownable = true;
+
+        processcoroutine = false;
     }
     
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
@@ -407,32 +393,51 @@ public class GameManager : MonoBehaviour
 
             else
             {
-                Keydownable = false;
-                StartCoroutine(OnUpdateRoutine());
+                if (processcoroutine == false)
+                    StartCoroutine(OnUpdateRoutine());
             }
         }
     }
 
-    void Timer()
-    {
-        sw.Start();
-        if (sw.ElapsedMilliseconds > 5000)
-        {
-            Keydownable = true;
+    //void Timer()
+    //{
+    //    slider.value = 0;
 
-            sw.Stop();
-            sw.Reset();
-        }
-    }
+    //    if(time != 0)
+    //    {
+    //        Debug.Log(time);
+    //        time = time - Time.deltaTime;
+    //        slider.value = time/1000;
+    //        if(time<=0)
+    //        {
+    //            time = 0;
+    //        }
+    //    }
+    //    Keydownable = true;
+    //    slider.value = 5;
+    //}
+
+    //void Timer()
+    //{
+    //    sw.Start();
+    //    if (sw.ElapsedMilliseconds > 5000)
+    //    {
+    //        Keydownable = true;
+
+    //        sw.Stop();
+    //        sw.Reset();
+    //    }
+    //}
 
     IEnumerator OnUpdateRoutine()
     {
-        slider.maxValue = delay;
+        processcoroutine = true;
+
         slider.value = 0;
 
         Keydownable = false;
 
-        for (int i = 0; i < delay; i++)
+        for (int i = 0; i < 5; i++)
         {
             slider.value = i;
 
@@ -440,7 +445,9 @@ public class GameManager : MonoBehaviour
         }
 
         Keydownable = true;
-        slider.value = delay;
+        slider.value = 5;
+
+        processcoroutine = false;
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
