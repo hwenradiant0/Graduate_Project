@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using EZCameraShake;
 using System.Diagnostics;
 
 using Debug = UnityEngine.Debug;
@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     private bool processcoroutine;
 
     public Radial_Slider slider;
+    public CameraShake camarashake;
 
     public int numCube = 0;
 
@@ -394,7 +395,10 @@ public class GameManager : MonoBehaviour
             else
             {
                 if (processcoroutine == false)
+                {
                     StartCoroutine(OnUpdateRoutine());
+                    CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 1.0f);
+                }
             }
         }
     }
