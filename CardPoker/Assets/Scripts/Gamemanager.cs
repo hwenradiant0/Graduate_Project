@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     private bool processcoroutine;
 
     public Radial_Slider slider;
-    public CameraShake camarashake;
 
     public int numCube = 0;
 
@@ -397,7 +396,7 @@ public class GameManager : MonoBehaviour
                 if (processcoroutine == false)
                 {
                     StartCoroutine(OnUpdateRoutine());
-                    CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 1.0f);
+                    CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
                 }
             }
         }
