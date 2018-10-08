@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using EZCameraShake;
-using System.Diagnostics;
 
 using Debug = UnityEngine.Debug;
 
@@ -15,7 +14,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public GameObject[] Z_Cubes = null;
 
-    private Stopwatch sw = new Stopwatch();
 
     private bool Keydownable;
     private bool processcoroutine;
@@ -302,6 +300,7 @@ public class GameManager : MonoBehaviour
     Deck RDeck = null;
 
     CardManager CMG = null;
+    Countdown countdown = null;
 
     // Use this for initialization
     void Start()
@@ -312,6 +311,7 @@ public class GameManager : MonoBehaviour
         RDeck = new Deck(false);
 
         CMG = new CardManager();
+        countdown = new Countdown();
 
         fState = true;
         state = false;
@@ -396,6 +396,7 @@ public class GameManager : MonoBehaviour
                 if (processcoroutine == false)
                 {
                     StartCoroutine(OnUpdateRoutine());
+                    Countdown.countdown.decreaseTime(10.0f);
                     CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
                 }
             }
@@ -490,6 +491,7 @@ public class GameManager : MonoBehaviour
             {
                 fState = false;
                 state = true;
+                Countdown.countdown.startcountdown();
             }
         }
 
