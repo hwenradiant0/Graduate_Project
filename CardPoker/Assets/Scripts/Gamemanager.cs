@@ -14,13 +14,55 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public GameObject[] Z_Cubes = null;
 
+    public CameraManager cameramanager;
+    public CameraShake   camerashaker;
 
     private bool Keydownable;
     private bool processcoroutine;
 
-    public Radial_Slider slider;
+    public Radial_Slider    slider;
 
     public int numCube = 0;
+
+    public bool xState, yState, zState;
+    bool fState;
+    bool state;
+    bool recentCard;
+
+    IEnumerator coroutine;
+
+    Deck QDeck = null;
+    Deck WDeck = null;
+    Deck EDeck = null;
+    Deck RDeck = null;
+
+    CardManager CMG = null;
+
+    Countdown countdown = null;
+
+    // Use this for initialization
+    void Start()
+    {
+        QDeck = new Deck(true);
+        WDeck = new Deck(true);
+        EDeck = new Deck(false);
+        RDeck = new Deck(false);
+
+        CMG = new CardManager();
+        countdown = new Countdown();
+
+        fState = true;
+        state = false;
+
+        xState = false;
+        zState = false;
+
+        slider.maxValue = 5;
+        slider.value = 5;
+        Keydownable = true;
+
+        processcoroutine = false;
+    }
 
     public class CardManager
     {
@@ -51,18 +93,11 @@ public class GameManager : MonoBehaviour
         }
 
         private List<GameObject> Cubes = new List<GameObject>();
-        
-
-        public CardManager()
-        {
-        }
 
         public void InputCard(string Type, int Num, string Color)
         {
             Cards.Add(new Card { CardType = Type, CardNum = Num, CardColor = Color});
-
-            //Debug.Log("Type : " + Cards[Cards.Count-1].CardType);
-            //Debug.Log("Num : " + Cards[Cards.Count-1].CardNum);
+            Debug.Log(Num);
         }
 
         public void CreateCube(GameObject[] Cube_Type1, GameObject[] Cube_Type2)
@@ -78,7 +113,7 @@ public class GameManager : MonoBehaviour
 
             if (Cubes.Count-1 == 0)
             {
-                Cubes[Cubes.Count-1].transform.localPosition = new Vector3(0.0f,0.1f,0.0f);
+                Cubes[Cubes.Count-1].transform.localPosition = new Vector3(0.0f,0.05f,0.0f);
             }
             else
             {
@@ -95,8 +130,6 @@ public class GameManager : MonoBehaviour
             }
 
             Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
-
-            //ystate = false;
         }
 
         public void ResizeCube(bool card)
@@ -164,21 +197,21 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
-        void RemoveCube(int num)
+        
+        public void ControlCube(int num)
         {
             int temp = Cards.Count;
 
-            Cards.RemoveRange(temp - num, num);
-
-            for (int i=num; i>0; i--)
+            for (int i = num; i > 0; i--)
             {
-                Destroy(Cubes[temp - i], 0.1f);
+                Cubes[temp - i].GetComponent<FixedCube>().fixedCube();
+                Cards[temp - i].CardNum = 10;
+                Cards[temp - i].CardType = "Joker";
+                Cards[temp - i].CardColor = "White";
             }
-            Cubes.RemoveRange(temp - num, num);
         }
 
-        public void CubeDestroy()
+        public void scoreCheck()
         {
             if (Cubes.Count > 1)
             {
@@ -186,18 +219,16 @@ public class GameManager : MonoBehaviour
                 {
                     if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)  // 연속된 수 일때 제거
                     {
-                        RemoveCube(2);
                         Score.scoreValue += 2;
-                        Debug.Log("case1");
+                        ControlCube(2);
                     }
 
                     else if (Cubes.Count > 2)
                     {
                         if(Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor) // 세개가 같은 색 일때
                         {
-                            RemoveCube(3);
                             Score.scoreValue += 1;
-                            Debug.Log("case2");
+                            ControlCube(3);
                         }
                     }
                 }
@@ -206,9 +237,8 @@ public class GameManager : MonoBehaviour
                 {
                     if (Cards[Cards.Count - 1].CardNum == Cards[Cards.Count - 2].CardNum) // 같은 숫자일때
                     {
-                        RemoveCube(2);
                         Score.scoreValue += 2;
-                        Debug.Log("case3");
+                        ControlCube(2);
                     }
 
                     if (Cubes.Count > 2)
@@ -219,9 +249,8 @@ public class GameManager : MonoBehaviour
                             {
                                 if (Cards[Cards.Count - 2].CardNum - Cards[Cards.Count - 3].CardNum == 1)
                                 {
-                                    RemoveCube(3);
-                                    Debug.Log("case4");
                                     Score.scoreValue += 3;
+                                    ControlCube(3);
                                 }
                             }
                         }
@@ -230,7 +259,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
+    
     public class Card
     {
         public string       CardType;   // Q = 1, W = 2, E = 3, R = 4
@@ -272,7 +301,6 @@ public class GameManager : MonoBehaviour
 
         public void selectCard()
         {
-            //Debug.Log(CardDeck.Count);
             CardDeck.RemoveAt(0);
         }
 
@@ -287,44 +315,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public bool xState, yState, zState;
-    bool fState;
-    bool state;
-    bool recentCard;
-
-    IEnumerator coroutine;
-
-    Deck QDeck = null;
-    Deck WDeck = null;
-    Deck EDeck = null;
-    Deck RDeck = null;
-
-    CardManager CMG = null;
-    Countdown countdown = null;
-
-    // Use this for initialization
-    void Start()
-    {
-        QDeck = new Deck(true);
-        WDeck = new Deck(true);
-        EDeck = new Deck(false);
-        RDeck = new Deck(false);
-
-        CMG = new CardManager();
-        countdown = new Countdown();
-
-        fState = true;
-        state = false;
-
-        xState = false;
-        zState = false;
-
-        slider.maxValue = 5;
-        slider.value = 5;
-        Keydownable = true;
-
-        processcoroutine = false;
-    }
     
     public void ChangeLastItemInQDeck(Component image, Sprite[] cardImage)
     {
@@ -387,7 +377,9 @@ public class GameManager : MonoBehaviour
 
                     state = true;
                     CMG.ResizeCube(recentCard);
-                    CMG.CubeDestroy();
+                    CMG.scoreCheck();
+                    if(numCube>1)
+                        cameramanager.CameraUpper();
                 }
             }
 
@@ -397,7 +389,8 @@ public class GameManager : MonoBehaviour
                 {
                     StartCoroutine(OnUpdateRoutine());
                     Countdown.countdown.decreaseTime(10.0f);
-                    CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
+                    StartCoroutine(camerashaker.Shake(0.15f,0.5f));
+                    //CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
                 }
             }
         }
@@ -495,8 +488,24 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        else   // In game
+        else
         {
+            bool reSheffle = false;
+            
+            if (numCube%20 == 0)
+            {
+                reSheffle = true;
+            }
+
+            if (reSheffle == true)
+            {
+                QDeck = new Deck(true);
+                WDeck = new Deck(true);
+                EDeck = new Deck(false);
+                RDeck = new Deck(false);
+                reSheffle = false;
+            }
+
             if (state == true)
             {
                 if (Input.GetKeyDown(KeyCode.Q) && QDeck.getCountCard() > 0)

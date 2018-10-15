@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Countdown : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class Countdown : MonoBehaviour
         countdown = this;
     }
 
-    [SerializeField] private Text   uiText;
-    [SerializeField] private float  mainTimer;
+    [SerializeField] private TextMeshProUGUI   uiText = null;
+    [SerializeField] private float  mainTimer = 0;
 
     private float timer;
     private bool canCount;

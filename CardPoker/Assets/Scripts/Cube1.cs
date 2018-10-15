@@ -17,6 +17,7 @@ public class Cube1 : MonoBehaviour
     int CubeNum;
 
     float MoveSpeed;
+    float Direction;
 
     public Color[] color;
     Material m_Material;
@@ -24,8 +25,10 @@ public class Cube1 : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-        MoveSpeed = 2.0f;
         gamemanager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        CubeNum = gamemanager.numCube;
+        MoveSpeed = 2.0f + (CubeNum * 0.2f);
+        Direction = 1.0f;
         m_Material = GetComponent<Renderer>().material;
         GetComponent<Rigidbody>().isKinematic = true;
     }
@@ -33,16 +36,16 @@ public class Cube1 : MonoBehaviour
     // Update is called once per frame
     void Update ()
     {
-        this.transform.position = this.transform.position + transform.right * MoveSpeed * Time.deltaTime;
+        this.transform.position = this.transform.position + transform.right * MoveSpeed * Direction * Time.deltaTime;
 
         if (this.transform.position.x >= 2.5f)
         {
-            MoveSpeed = -2.0f;
+            Direction = -1.0f;
         }
 
         else if (this.transform.position.x <= -2.5f)
         {
-            MoveSpeed = 2.0f;
+            Direction = 1.0f;
         }
 
         if (MoveSpeed == 0)

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [ExecuteInEditMode]
 public class Radial_Slider : MonoBehaviour
 {
-    public Image Open;
-
     public Image filled;
-    public Text text;
+    public TextMeshProUGUI text;
 
     public float maxValue = 100;
     public float value = 0;
