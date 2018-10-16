@@ -27,7 +27,10 @@ public class Cube1 : MonoBehaviour
     {
         gamemanager = GameObject.Find("GameManager").GetComponent<GameManager>();
         CubeNum = gamemanager.numCube;
-        MoveSpeed = 2.0f + (CubeNum * 0.2f);
+        if (gamemanager.tutorial == true)
+            MoveSpeed = 3.0f;
+        else
+            MoveSpeed = 3.0f + (CubeNum * 0.3f);
         Direction = 1.0f;
         m_Material = GetComponent<Renderer>().material;
         GetComponent<Rigidbody>().isKinematic = true;
@@ -41,11 +44,17 @@ public class Cube1 : MonoBehaviour
         if (this.transform.position.x >= 2.5f)
         {
             Direction = -1.0f;
+            if (MoveSpeed > 3.0f)
+                MoveSpeed = MoveSpeed - 0.3f;
+            Debug.Log("s" + MoveSpeed);
         }
 
         else if (this.transform.position.x <= -2.5f)
         {
             Direction = 1.0f;
+            if (MoveSpeed > 3.0f)
+                MoveSpeed = MoveSpeed - 0.3f;
+            Debug.Log("s" + MoveSpeed);
         }
 
         if (MoveSpeed == 0)
