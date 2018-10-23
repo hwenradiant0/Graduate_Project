@@ -44,7 +44,8 @@ namespace EZCameraShake
         /// </summary>
         /// <param name="magnitude">The intensity of the shake.</param>
         /// <param name="fadeOutTime">How long, in seconds, to fade out the shake.</param>
-        /// <param name="roughness">Roughness of the shake. Lower values are smoother, higher values are more jarring.</param>
+        /// <param name="roughness">Roughness of the shake. Lower 
+        /// s are smoother, higher values are more jarring.</param>
         public CameraShakeInstance(float magnitude, float roughness, float fadeInTime, float fadeOutTime)
         {
             this.Magnitude = magnitude;

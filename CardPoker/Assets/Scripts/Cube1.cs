@@ -6,6 +6,7 @@ using UnityEngine;
 public class Cube1 : MonoBehaviour
 {
     public static Cube1 CurrentCube { get; private set; }
+    public GameObject CubePlaceEffect;
 
     private void OnEnable()
     {
@@ -30,7 +31,7 @@ public class Cube1 : MonoBehaviour
         if (gamemanager.tutorial == true)
             MoveSpeed = 3.0f;
         else
-            MoveSpeed = 3.0f + (CubeNum * 0.3f);
+            MoveSpeed = 3.0f + 0.3f * CubeNum;
         Direction = 1.0f;
         m_Material = GetComponent<Renderer>().material;
         GetComponent<Rigidbody>().isKinematic = true;
@@ -46,7 +47,6 @@ public class Cube1 : MonoBehaviour
             Direction = -1.0f;
             if (MoveSpeed > 3.0f)
                 MoveSpeed = MoveSpeed - 0.3f;
-            Debug.Log("s" + MoveSpeed);
         }
 
         else if (this.transform.position.x <= -2.5f)
@@ -54,11 +54,12 @@ public class Cube1 : MonoBehaviour
             Direction = 1.0f;
             if (MoveSpeed > 3.0f)
                 MoveSpeed = MoveSpeed - 0.3f;
-            Debug.Log("s" + MoveSpeed);
         }
 
         if (MoveSpeed == 0)
+        {
             m_Material.color = color[2];
+        }
 
         else
         {
@@ -76,5 +77,7 @@ public class Cube1 : MonoBehaviour
     internal void Stop()
     {
         MoveSpeed = 0;
+        GameObject effectIns = (GameObject)Instantiate(CubePlaceEffect, this.transform.position, this.transform.rotation);
+        Destroy(effectIns, 0.5f);
     }
 }

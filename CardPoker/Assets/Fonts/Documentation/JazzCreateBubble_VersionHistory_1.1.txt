@@ -4,7 +4,8 @@ Version 1.0 - First Submission
 Version 1.1 - Beginner mistakes 
 Version 1.2 - Beginner mistakes
 Version 1.3 - Beginner mistakes
-Version 1.4 - Updated store images to give a better overview of this font. Also updated the alt key document and script to display all 174 usable font characters.
+Version 1.4 - Updated store images to give a better overview of this font. Also updated the alt key document and script to dis
+all 174 usable font characters.
 Version 1.5 - a) Added this Version History Document to coincide with the rest of my assets
              b) Removed unused Resources Folder from project
              c) Added Documentation Folder and moved Alt Key Document and Version History 

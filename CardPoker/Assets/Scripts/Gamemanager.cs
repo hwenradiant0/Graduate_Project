@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using EZCameraShake;
 
 using Debug = UnityEngine.Debug;
@@ -26,10 +27,9 @@ public class GameManager : MonoBehaviour
 
     bool startgame;
 
-    public bool tutorial = true;
-
-    public void OnTutorial() { tutorial = true;}
-    public void OffTutorial() { tutorial = false; startgame = true;}
+    public bool tutorial;
+    
+    public void OffTutorial() { tutorial = false; startgame = true; ResetScore(); }
     public void ResetScore() { Score.scoreValue = 0; }
     public void GoTime() { Time.timeScale = 1.0f; }
 
@@ -66,21 +66,36 @@ public class GameManager : MonoBehaviour
         xState = false;
         zState = false;
 
-        slider.maxValue = 5;
-        slider.value = 5;
+        slider.maxValue = 4;
+        slider.value = 4;
         Keydownable = true;
 
         processcoroutine = false;
 
-        startgame = false;
+        if (SceneManager.GetActiveScene().name == "Tutorial")
+        {
+            tutorial = true;
+            ResetScore();
+        }
+        else
+            OffTutorial();
     }
 
     public class CardManager
     {
         List<Card> Cards = new List<Card>();
 
+        float posx, posy, posz;
+
+        public float changex() { return posx; }
+        public float changey() { return posy; }
+        public float changez() { return posz; }
+
         bool xstate;
         bool zstate;
+
+        bool stackcheck = true;
+        int stack = 0;
 
         public int numCube()
         {
@@ -108,7 +123,6 @@ public class GameManager : MonoBehaviour
         public void InputCard(string Type, int Num, string Color)
         {
             Cards.Add(new Card { CardType = Type, CardNum = Num, CardColor = Color});
-            Debug.Log(Num);
         }
 
         public void CreateCube(GameObject[] Cube_Type1, GameObject[] Cube_Type2)
@@ -135,11 +149,11 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    Cubes[Cubes.Count - 1].transform.localPosition = new Vector3(Cubes[Cubes.Count - 2].transform.position.x, Cubes[Cubes.Count - 2].transform.position.y + 0.1f, Cubes[Cubes.Count - 2].transform.position.z- Cubes[Cubes.Count - 2].transform.localScale.z);
+                    Cubes[Cubes.Count - 1].transform.localPosition = new Vector3(Cubes[Cubes.Count - 2].transform.position.x, Cubes[Cubes.Count - 2].transform.position.y + 0.1f, Cubes[Cubes.Count - 2].transform.position.z - Cubes[Cubes.Count - 2].transform.localScale.z);
                     Cubes[Cubes.Count - 1].transform.localScale = Cubes[Cubes.Count - 2].transform.localScale;
                 }
             }
-
+            
             Cubes[Cubes.Count-1].transform.localRotation = Quaternion.identity;
         }
 
@@ -223,11 +237,25 @@ public class GameManager : MonoBehaviour
 
             for (int i = num; i > 0; i--)
             {
-                Cubes[temp - i].GetComponent<FixedCube>().fixedCube();
+                Cubes[temp - i].GetComponent<FixedCube>().fixedCube(stack-1);
                 Cards[temp - i].CardNum = 10;
                 Cards[temp - i].CardType = "Joker";
                 Cards[temp - i].CardColor = "White";
             }
+        }
+
+        private void stackCheck()
+        {
+            if (stackcheck == true)
+                stack++;
+            else
+                stack--;
+
+            if (stack > 12)
+                stackcheck = false;
+
+            else if (stack < 2)
+                stackcheck = true;
         }
 
         public void scoreCheck()
@@ -239,6 +267,7 @@ public class GameManager : MonoBehaviour
                     if (Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == 1 || Cards[Cards.Count - 1].CardNum - Cards[Cards.Count - 2].CardNum == -1)  // 연속된 수 일때 제거
                     {
                         Score.scoreValue += 2;
+                        stackCheck();
                         ControlCube(2);
                     }
 
@@ -247,6 +276,7 @@ public class GameManager : MonoBehaviour
                         if(Cards[Cards.Count - 2].CardColor == Cards[Cards.Count - 3].CardColor) // 세개가 같은 색 일때
                         {
                             Score.scoreValue += 1;
+                            stackCheck();
                             ControlCube(3);
                         }
                     }
@@ -257,6 +287,7 @@ public class GameManager : MonoBehaviour
                     if (Cards[Cards.Count - 1].CardNum == Cards[Cards.Count - 2].CardNum) // 같은 숫자일때
                     {
                         Score.scoreValue += 2;
+                        stackCheck();
                         ControlCube(2);
                     }
 
@@ -269,6 +300,18 @@ public class GameManager : MonoBehaviour
                                 if (Cards[Cards.Count - 2].CardNum - Cards[Cards.Count - 3].CardNum == 1)
                                 {
                                     Score.scoreValue += 3;
+
+                                    if (stackcheck == true)
+                                        stack++;
+                                    else
+                                        stack--;
+
+                                    if (stack > 15)
+                                        stackcheck = false;
+
+                                    else if (stack < 1)
+                                        stackcheck = true;
+
                                     ControlCube(3);
                                 }
                             }
@@ -390,55 +433,37 @@ public class GameManager : MonoBehaviour
                 if (Keydownable == true)
                 {
                     if (recentCard == true)
+                    {
+                        cameramanager.CameraMover(0, 0.1f, 0);
                         Cube1.CurrentCube.Stop();
+                    }
                     else
+                    {
+                        cameramanager.CameraMover(0, 0.1f, 0);
                         Cube2.CurrentCube.Stop();
+                    }
 
                     state = true;
                     CMG.ResizeCube(recentCard);
                     CMG.scoreCheck();
-                    if (numCube > 1)
-                    {
-                        //cameramanager.TargetingCamera(CMG.LastCubePosion());
-                        cameramanager.CameraUpper();
-                    }
                 }
             }
 
             else
+            {
+                if (processcoroutine == false)
                 {
-                    if (processcoroutine == false && tutorial == false)
+                    if (tutorial == true)
+                    {
+                        GameObject.Find("Tutorial").transform.FindChild("Message3").gameObject.SetActive(true);
+                    }
+                    else
                     {
                         StartCoroutine(OnUpdateRoutine());
-                        Countdown.countdown.decreaseTime(10.0f);
                         StartCoroutine(camerashaker.Shake(0.15f, 0.5f));
-                        //CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
+                        Countdown.countdown.decreaseTime(10.0f);
                     }
-                }
-
-            if (GameObject.Find("Canvas").transform.FindChild("FourthTutorial").gameObject.activeSelf == true && tutorial == true)
-            {
-                GameObject.Find("Canvas").transform.FindChild("FourthTutorial").gameObject.SetActive(false);
-                GameObject.Find("Canvas").transform.FindChild("FifthTutorial").gameObject.SetActive(true);
-            }
-
-            else if (GameObject.Find("Canvas").transform.FindChild("SixthTutorial").gameObject.activeSelf == true && tutorial == true)
-            {
-                if (xState == true && Input.GetKeyDown(KeyCode.Space))
-                {
-                    GameObject.Find("Canvas").transform.FindChild("SixthTutorial").gameObject.SetActive(false);
-                    GameObject.Find("Canvas").transform.FindChild("SeventhTutorial").gameObject.SetActive(true);
-                    Time.timeScale = 1.0f;
-                }
-            }
-
-            else if (GameObject.Find("Canvas").transform.FindChild("EighthTutorial").gameObject.activeSelf == true && tutorial == true && numCube == 3)
-            {
-                if (xState == true && Input.GetKeyDown(KeyCode.Space))
-                {
-                    GameObject.Find("Canvas").transform.FindChild("EighthTutorial").gameObject.SetActive(false);
-                    GameObject.Find("Canvas").transform.FindChild("NinethTutorial").gameObject.SetActive(true);
-                    Time.timeScale = 0.0f;
+                    //CameraShaker.Instance.ShakeOnce(1.0f, 4.0f, 0.1f, 0.1f);
                 }
             }
         }
@@ -474,23 +499,27 @@ public class GameManager : MonoBehaviour
     //    }
     //}
 
+
     IEnumerator OnUpdateRoutine()
     {
         processcoroutine = true;
 
+        slider.maxValue = 4;
         slider.value = 0;
 
         Keydownable = false;
 
-        for (int i = 0; i < 5; i++)
+        float deltaTime = Time.deltaTime;
+
+        for (float i = 0; i < 4; i+= deltaTime)
         {
             slider.value = i;
 
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(deltaTime);
         }
 
         Keydownable = true;
-        slider.value = 5;
+        slider.value = 4;
 
         processcoroutine = false;
     }
@@ -526,31 +555,34 @@ public class GameManager : MonoBehaviour
     {
         numCube = CMG.numCube();
 
-        if (Input.GetKeyDown(KeyCode.S) && GameObject.Find("Canvas").transform.FindChild("FirstTutorial").gameObject.activeSelf == true)
+        if (GameObject.Find("Tutorial").transform.FindChild("FirstTutorial").gameObject.activeSelf == true)
         {
-            GameObject.Find("FirstTutorial").SetActive(false);
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                GameObject.Find("FirstTutorial").SetActive(false);
 
-            GameObject.Find("Canvas").transform.FindChild("SecondTutorial").gameObject.SetActive(true);
-            fState = false;
-            state = true;
+                GameObject.Find("Tutorial").transform.FindChild("SecondTutorial").gameObject.SetActive(true);
+                fState = false;
+                state = true;
 
-            Countdown.countdown.startcountdown();
+                Countdown.countdown.startcountdown();
 
-            Time.timeScale = 0.0f;
+                Time.timeScale = 0.0f;
+            }
         }
 
-        if (GameObject.Find("Canvas").transform.FindChild("SecondTutorial").gameObject.activeSelf == true)
+        if (GameObject.Find("Tutorial").transform.FindChild("SecondTutorial").gameObject.activeSelf == true)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 GameObject.Find("SecondTutorial").SetActive(false);
-                GameObject.Find("Canvas").transform.FindChild("ThirdTutorial").gameObject.SetActive(true);
+                GameObject.Find("Tutorial").transform.FindChild("ThirdTutorial").gameObject.SetActive(true);
             }
         }
 
         if (state == true)
         {
-            if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Canvas").transform.FindChild("ThirdTutorial").gameObject.activeSelf == true)
+            if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Tutorial").transform.FindChild("ThirdTutorial").gameObject.activeSelf == true)
             {
                 GameObject.Find("ThirdTutorial").SetActive(false);
                 Time.timeScale = 1.0f;
@@ -559,10 +591,11 @@ public class GameManager : MonoBehaviour
                 QDeck.selectCard();
                 state = false;
                 recentCard = true;
-                GameObject.Find("Canvas").transform.FindChild("FourthTutorial").gameObject.SetActive(true);
+                GameObject.Find("Tutorial").transform.FindChild("FourthTutorial").gameObject.SetActive(true);
+                FindObjectOfType<SoundManager>().Play("CardSelectSound");
             }
 
-            else if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Canvas").transform.FindChild("FifthTutorial").gameObject.activeSelf == true)
+            else if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Tutorial").transform.FindChild("FifthTutorial").gameObject.activeSelf == true)
             {
                 GameObject.Find("FifthTutorial").SetActive(false);
                 Time.timeScale = 1.0f;
@@ -571,10 +604,11 @@ public class GameManager : MonoBehaviour
                 QDeck.selectCard();
                 state = false;
                 recentCard = true;
-                GameObject.Find("Canvas").transform.FindChild("SixthTutorial").gameObject.SetActive(true);
+                GameObject.Find("Tutorial").transform.FindChild("SixthTutorial").gameObject.SetActive(true);
+                FindObjectOfType<SoundManager>().Play("CardSelectSound");
             }
 
-            else if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Canvas").transform.FindChild("SeventhTutorial").gameObject.activeSelf == true)
+            else if (Input.GetKeyDown(KeyCode.Q) && GameObject.Find("Tutorial").transform.FindChild("SeventhTutorial").gameObject.activeSelf == true)
             {
                 GameObject.Find("SeventhTutorial").SetActive(false);
                 Time.timeScale = 1.0f;
@@ -583,19 +617,20 @@ public class GameManager : MonoBehaviour
                 QDeck.selectCard();
                 state = false;
                 recentCard = true;
-                GameObject.Find("Canvas").transform.FindChild("EighthTutorial").gameObject.SetActive(true);
+                GameObject.Find("Tutorial").transform.FindChild("EighthTutorial").gameObject.SetActive(true);
+                FindObjectOfType<SoundManager>().Play("CardSelectSound");
             }
 
-            else if (GameObject.Find("Canvas").transform.FindChild("NinethTutorial").gameObject.activeSelf == true)
+            else if (GameObject.Find("Tutorial").transform.FindChild("NinethTutorial").gameObject.activeSelf == true)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     GameObject.Find("NinethTutorial").SetActive(false);
-                    GameObject.Find("Canvas").transform.FindChild("TenthTutorial").gameObject.SetActive(true);
+                    GameObject.Find("Tutorial").transform.FindChild("TenthTutorial").gameObject.SetActive(true);
                 }
             }
 
-            else if (GameObject.Find("Canvas").transform.FindChild("TenthTutorial").gameObject.activeSelf == true)
+            else if (GameObject.Find("Tutorial").transform.FindChild("TenthTutorial").gameObject.activeSelf == true)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
@@ -609,6 +644,35 @@ public class GameManager : MonoBehaviour
         else
         {
             Resize();
+
+            if (GameObject.Find("Tutorial").transform.FindChild("FourthTutorial").gameObject.activeSelf == true && xState == true)
+            {
+                if (xState == true && Input.GetKeyDown(KeyCode.Space))
+                {
+                    GameObject.Find("Tutorial").transform.FindChild("FourthTutorial").gameObject.SetActive(false);
+                    GameObject.Find("Tutorial").transform.FindChild("FifthTutorial").gameObject.SetActive(true);
+                }
+            }
+
+            else if (GameObject.Find("Tutorial").transform.FindChild("SixthTutorial").gameObject.activeSelf == true && xState == true)
+            {
+                if (xState == true && Input.GetKeyDown(KeyCode.Space))
+                {
+                    GameObject.Find("Tutorial").transform.FindChild("SixthTutorial").gameObject.SetActive(false);
+                    GameObject.Find("Tutorial").transform.FindChild("SeventhTutorial").gameObject.SetActive(true);
+                    Time.timeScale = 1.0f;
+                }
+            }
+
+            else if (GameObject.Find("Tutorial").transform.FindChild("EighthTutorial").gameObject.activeSelf == true && xState == true)
+            {
+                if (xState == true && Input.GetKeyDown(KeyCode.Space))
+                {
+                    GameObject.Find("Tutorial").transform.FindChild("EighthTutorial").gameObject.SetActive(false);
+                    GameObject.Find("Tutorial").transform.FindChild("NinethTutorial").gameObject.SetActive(true);
+                    Time.timeScale = 0.0f;
+                }
+            }
         }
     }
 
@@ -622,6 +686,7 @@ public class GameManager : MonoBehaviour
             QDeck.selectCard();
             state = false;
             recentCard = true;
+            FindObjectOfType<SoundManager>().Play("CardSelectSound");
         }
 
         else if (Input.GetKeyDown(KeyCode.W) && WDeck.getCountCard() > 0)
@@ -631,6 +696,7 @@ public class GameManager : MonoBehaviour
             WDeck.selectCard();
             state = false;
             recentCard = false;
+            FindObjectOfType<SoundManager>().Play("CardSelectSound");
         }
 
         else if (Input.GetKeyDown(KeyCode.E) && EDeck.getCountCard() > 0)
@@ -640,6 +706,7 @@ public class GameManager : MonoBehaviour
             EDeck.selectCard();
             state = false;
             recentCard = true;
+            FindObjectOfType<SoundManager>().Play("CardSelectSound");
         }
 
         else if (Input.GetKeyDown(KeyCode.R) && RDeck.getCountCard() > 0)
@@ -649,6 +716,7 @@ public class GameManager : MonoBehaviour
             RDeck.selectCard();
             state = false;
             recentCard = false;
+            FindObjectOfType<SoundManager>().Play("CardSelectSound");
         }
     }
 
@@ -660,20 +728,22 @@ public class GameManager : MonoBehaviour
         {
             fState = false;
             state = true;
+            GoTime();
             Countdown.countdown.startcountdown();
         }
 
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            GameObject.Find("Canvas").transform.FindChild("IngameOptions").gameObject.SetActive(true);
+            GameObject.Find("UI").transform.FindChild("IngameOptions").gameObject.SetActive(true);
             Time.timeScale = 0.0f;
         }
 
         if (Input.GetKey(KeyCode.Tab))
         {
-            GameObject.Find("Canvas").transform.FindChild("ScoreBoard").gameObject.SetActive(true);
+            GameObject.Find("UI").transform.FindChild("ScoreBoard").gameObject.SetActive(true);
             Time.timeScale = 1.0f;
         }
+
         else if(Input.GetKeyUp(KeyCode.Tab))
         {
             GameObject.Find("ScoreBoard").SetActive(false);

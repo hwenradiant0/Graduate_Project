@@ -5,6 +5,9 @@ using UnityEngine;
 public class FixedCube : MonoBehaviour {
 
     public Color[] color;
+    public GameObject CubeFixedEffect;
+    int num;
+
     Material m_Material;
     bool Fixed;
     
@@ -13,17 +16,21 @@ public class FixedCube : MonoBehaviour {
     {
         m_Material = GetComponent<Renderer>().material;
         Fixed = false;
-	}
+        num = 0;
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
         if (Fixed == true)
-            m_Material.color = color[0];
+            m_Material.color = color[num];
     }
 
-    public void fixedCube()
+    public void fixedCube(int cubenum)
     {
+        num = cubenum;
         Fixed = true;
+        GameObject effectIns = (GameObject)Instantiate(CubeFixedEffect, this.transform.position, this.transform.rotation);
+        Destroy(effectIns, 1f);
     }
 }

@@ -10,7 +10,7 @@ public class Radial_Slider : MonoBehaviour
     public Image filled;
     public TextMeshProUGUI text;
 
-    public float maxValue = 100;
+    public float maxValue = 4;
     public float value = 0;
 
     private void Update()
@@ -19,6 +19,6 @@ public class Radial_Slider : MonoBehaviour
         float amount = value / maxValue;
         
         filled.fillAmount = amount;
-        text.text = Mathf.RoundToInt(5-value).ToString();
+        text.text = Mathf.CeilToInt(4-value).ToString();
     }
 }
