@@ -1,4 +1,7 @@
-Modern UI Pack - v1.5a
+Modern UI Pack - v2.0f
+
+You can import TextMesh Pro and then TMP integration if you want to use with TMP.
+Or you can just import TMP Included integration.
 
 Do you have any questions or requests? Contact me via 
 E-mail: isa.steam@outlook.com
@@ -7,8 +10,27 @@ YouTube: https://www.youtube.com/c/Michsky
 Patreon: https://www.patreon.com/michsky
 
 Special thanks to:
-Raphael Monnerat (https://github.com/Shinao)
-Filmos
+Filmos (Tester / Contributor)
+Kabbouchi (Tester)
+Raphael Monnerat (https://github.com/Shinao  / Contributor)
+
+Change Log v2.0f
+----------------------------------------
+• New demo scene
+• New switches
+• New buttons
+• New editor shortcuts
+• Added TextMesh Pro support
+• Added new sliders
+• Added gradient system
+• Added blur material
+• Added new icons
+• Added new animated icons
+• Dropdowns changed
+
+Known issues:
+• Infinite radial slider
+----------------------------------------
 
 Change Log v1.5a
 ----------------------------------------

@@ -36,20 +36,19 @@ public class SwitchAnim : MonoBehaviour {
         }
 
         playerPrefsHelper = PlayerPrefs.GetInt(switchID + "Switch");
-        Debug.Log(playerPrefsHelper);
 
         if (playerPrefsHelper == 1)
         {
             OnEvents.Invoke();
             switchAnimator.Play(onTransition);
-            isOn = true;
+            isOn = false;
         }
 
         else
         {
             OffEvents.Invoke();
             switchAnimator.Play(offTransition);
-            isOn = false;
+            isOn = true;
         }
     }
 

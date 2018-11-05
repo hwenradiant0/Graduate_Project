@@ -19,6 +19,11 @@ public class ProgressBar : MonoBehaviour {
     public bool enableLoop;
     [Range(0, 100)] public float specifiedValue;
 
+    private void Start()
+    {
+        currentPercent = 0;
+    }
+
     void Update ()
 	{
 		if (currentPercent <= 100 && isOn == true && enableSpecified == false) 
@@ -39,11 +44,19 @@ public class ProgressBar : MonoBehaviour {
             }
         }
 
+        if(currentPercent >= 99 && restart == false)
+        {
+            textPercent.GetComponent<Text>().text = "Space!";
+        }
+        else
+        {
+            textPercent.GetComponent<Text>().text = ((int)currentPercent).ToString("F0") + "%";
+        }
+
         if (currentPercent == 100 || currentPercent >= 100 && restart == true) 
 		{
 			currentPercent = 0;
 		}
 		loadingBar.GetComponent<Image> ().fillAmount = currentPercent / 100;
-		textPercent.GetComponent<Text> ().text = ((int)currentPercent).ToString ("F0") + "%";
 	}
 }

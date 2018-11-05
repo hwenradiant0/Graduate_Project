@@ -1,83 +1,84 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class DemoManager : MonoBehaviour {
+public class DemoManager : MonoBehaviour
+{
+    [Header("PANEL LIST")]
+    public List<GameObject> panels = new List<GameObject>();
 
-	[Header("ANIMATORS")]
-	public Animator canvasAnimator;
+    [Header("BUTTON LIST")]
+    public List<GameObject> buttons = new List<GameObject>();
 
-	[Header("PANELS")]
-	public CustomDropdown PanelDropdownSelector;
-	public List<GameObject> panels = new List<GameObject>();
-	public GameObject currentPanel;
-	private CanvasGroup canvasGroup;
+    [Header("TITLE")]
+    public Text topTitleText;
 
-	[Header("ANIMATION SETTINGS")]
-	private bool fadeOut = false;
-	private bool fadeIn = false;
-	[Range(0, 10)]public float fadeFactor = 8f;
+    // [Header("PANEL ANIMS")]
+    private string panelFadeIn = "Demo Panel In";
+    private string panelFadeOut = "Demo Panel Out";
 
-	void Start()
-	{
-		PanelDropdownSelector.ClearOptions();
-		foreach (var panel in panels)
-			PanelDropdownSelector.AddOption(panel.name);
-		PanelDropdownSelector.OnSelectedOptionChanged.AddListener(OnPanelChange);
-	}
+    // [Header("BUTTON ANIMS")]
+    private string buttonFadeIn = "HB Hover to Pressed";
+    private string buttonFadeOut = "HB Pressed to Normal";
 
-	void OnPanelChange()
-	{
-		var panelSelected = PanelDropdownSelector.GetSelectedOption();
-		var panel = panels.Find(p => p.name == panelSelected);
-		StartCoroutine("ChangePage", panel);
-	}
+    private GameObject currentPanel;
+    private GameObject nextPanel;
 
-	void Update ()
-	{
-		if (fadeOut)
-			canvasGroup.alpha -= fadeFactor * Time.deltaTime;
-		if (fadeIn) 
-		{
-			canvasGroup.alpha += fadeFactor * Time.deltaTime;
-		}
-	}
+    private GameObject currentButton;
+    private GameObject nextButton;
 
-	public void ChangePanel (GameObject newPanel) 
-	{
-	//	if (newPage != currentPanelIndex)
-		//   StartCoroutine ("ChangePage", newPage);
-	}
+    [Header("SETTINGS")]
+    public int currentPanelIndex = 0;
+    private int currentButtonlIndex = 0;
 
-	public IEnumerator ChangePage (GameObject newPanel)
-	{
-		canvasGroup = currentPanel.GetComponent<CanvasGroup>();
-		canvasGroup.alpha = 1f;
-		fadeIn = false;
-		fadeOut = true;
+    private Animator currentPanelAnimator;
+    private Animator nextPanelAnimator;
 
-		while(canvasGroup.alpha > 0)
-		{
-			yield return 0;
-		}
-		currentPanel.SetActive(false);
+    private Animator currentButtonAnimator;
+    private Animator nextButtonAnimator;
 
-		fadeIn = true;
-		fadeOut = false;
-		currentPanel = newPanel;
-		currentPanel.SetActive (true);
-		canvasGroup = currentPanel.GetComponent<CanvasGroup>();
-		canvasGroup.alpha = 0f;
+    void Start()
+    {
+        currentButton = buttons[currentPanelIndex];
+        currentButtonAnimator = currentButton.GetComponent<Animator>();
+        currentButtonAnimator.Play(buttonFadeIn);
 
-		while (canvasGroup.alpha <1f)
-		{
-			yield return 0;
-		}
+        currentPanel = panels[currentPanelIndex];
+        currentPanelAnimator = currentPanel.GetComponent<Animator>();
+        currentPanelAnimator.Play(panelFadeIn);
+    }
 
-		canvasGroup.alpha = 1f;
-		fadeIn = false;
+    public void changeTopTitle(string newTitle)
+    {
+        topTitleText.text = newTitle;
+    }
 
-		yield return 0;
-	}
+    public void PanelAnim(int newPanel)
+    {
+        if (newPanel != currentPanelIndex)
+        {
+            currentPanel = panels[currentPanelIndex];
+
+            currentPanelIndex = newPanel;
+            nextPanel = panels[currentPanelIndex];
+
+            currentPanelAnimator = currentPanel.GetComponent<Animator>();
+            nextPanelAnimator = nextPanel.GetComponent<Animator>();
+
+            currentPanelAnimator.Play(panelFadeOut);
+            nextPanelAnimator.Play(panelFadeIn);
+
+            currentButton = buttons[currentButtonlIndex];
+
+            currentButtonlIndex = newPanel;
+            nextButton = buttons[currentButtonlIndex];
+
+            currentButtonAnimator = currentButton.GetComponent<Animator>();
+            nextButtonAnimator = nextButton.GetComponent<Animator>();
+
+            currentButtonAnimator.Play(buttonFadeOut);
+            nextButtonAnimator.Play(buttonFadeIn);
+        }
+    }
 }
