@@ -41,14 +41,14 @@ public class SwitchAnim : MonoBehaviour {
         {
             OnEvents.Invoke();
             switchAnimator.Play(onTransition);
-            isOn = false;
+            isOn = true;
         }
 
         else
         {
             OffEvents.Invoke();
             switchAnimator.Play(offTransition);
-            isOn = true;
+            isOn = false;
         }
     }
 

@@ -38,10 +38,13 @@ public class GameManager : MonoBehaviour
     public bool tutorial;
     
     public void OffTutorial() { tutorial = false; startgame = true; ResetScore(); }
-    public void ResetScore() { Score.scoreValue = 0; MultipleScore.multipleValue = 1; }
+    public void ResetScore() { Score.scoreValue = 0; MultipleScore.multipleValue = 1; combo = true;}
     public void GoTime() { Time.timeScale = 1.0f; }
 
     public bool xState, yState, zState;
+
+    public static bool combo;
+
     bool fState;
     bool state;
     bool recentCard;
@@ -247,6 +250,7 @@ public class GameManager : MonoBehaviour
                             Debug.Log("no!");
                             Countdown.countdown.decreaseTime(10.0f);
                             MultipleScore.multipleValue = 1;
+                            combo = false;
                             StartCoroutine(OnUpdateRoutine());
                             StartCoroutine(camerashaker.Shake(0.15f, 0.5f));
                         }
@@ -316,8 +320,6 @@ public class GameManager : MonoBehaviour
 
     void Tutorial()
     {
-        numCube = CMG.numCube();
-
         if (GameObject.Find("Tutorial").transform.Find("FirstTutorial").gameObject.activeSelf == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -626,6 +628,7 @@ public class GameManager : MonoBehaviour
 
         if (startgame == true && Input.GetKeyDown(KeyCode.S))
         {
+            Debug.Log("a");
             fState = false;
             state = true;
             GoTime();

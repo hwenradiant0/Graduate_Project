@@ -26,17 +26,22 @@ public class CardManager : MonoBehaviour
     int stack = 0;
     public static int numItem;
 
-    Countdown countdown = null;
+    int numWhiteCard;
+    public static int playCard;
+    public static bool boom = false;
 
+    /*
     private void Start()
     {
         FloatingTextController.Initialize();
-        countdown = new Countdown();
         numItem = 0;
+        numWhiteCard = 0;
     }
+    */
 
     public int numCube()
     {
+        playCard = Cubes.Count - numWhiteCard;
         return Cubes.Count;
     }
 
@@ -104,7 +109,6 @@ public class CardManager : MonoBehaviour
             Cubes[Cubes.Count - 2].transform.gameObject.tag = "NowTarget";
         }
         
-
         Cubes[Cubes.Count - 1].transform.localRotation = Quaternion.identity;
     }
 
@@ -192,20 +196,20 @@ public class CardManager : MonoBehaviour
     public void ControlCube(int num)
     {
         int temp = Cards.Count;
-
+        boom = true;
         for (int i = num; i > 0; i--)
         {
             Cubes[temp - i].GetComponent<FixedCube>().fixedCube(stack - 1);
             Cards[temp - i].CardNum = 10;
             Cards[temp - i].CardType = "Joker";
             Cards[temp - i].CardColor = "White";
+            numWhiteCard++;
+            Debug.Log("whitecard : " + numWhiteCard);
         }
     }
 
     private void stackCheck()
     {
-        Debug.Log("stack : " + stack);
-
         if (stackcheck == true)
             stack++;
         else
@@ -350,7 +354,5 @@ public class CardManager : MonoBehaviour
                 }
             }
         }
-
-
     }
 }

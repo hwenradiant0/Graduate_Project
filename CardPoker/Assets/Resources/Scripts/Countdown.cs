@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using LitJson;
+using System.IO;
 
 public class Countdown : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class Countdown : MonoBehaviour
 
     Image timeBar;
     float maxTime = 100.0f;
+
 
     private void OnEnable()
     {
@@ -23,6 +26,7 @@ public class Countdown : MonoBehaviour
 
     private bool canCount;
     private bool doOnce;
+    private bool getIcon;
 
     private void Start()
     {
@@ -32,6 +36,7 @@ public class Countdown : MonoBehaviour
 
         canCount = false;
         doOnce = false;
+        getIcon = false;
     }
 
     internal void startcountdown()
@@ -62,7 +67,50 @@ public class Countdown : MonoBehaviour
             doOnce = true;
             uiText.text = "0.00";
             timer = 0.0f;
-            GameObject.Find("UI").transform.Find("GameOver").transform.gameObject.SetActive(true);
+
+            if (CardManager.boom == false)
+            {
+                GameObject.Find("UI").transform.Find("Follower").transform.gameObject.SetActive(true);
+                Memumanager.Result[3] = true;
+                JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
+                File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                getIcon = true;
+            }
+
+            else
+            {
+                if (CardManager.playCard == 0 && GameManager.combo == true)
+                {
+                    GameObject.Find("UI").transform.Find("Saviour").transform.gameObject.SetActive(true);
+                    Memumanager.Result[0] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    getIcon = true;
+                }
+
+                else if (CardManager.playCard == 0)
+                {
+                    GameObject.Find("UI").transform.Find("Friend").transform.gameObject.SetActive(true);
+                    Memumanager.Result[1] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    getIcon = true;
+                }
+
+                else if (GameManager.combo == true)
+                {
+                    GameObject.Find("UI").transform.Find("Impeccable").transform.gameObject.SetActive(true);
+                    Memumanager.Result[2] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    getIcon = true;
+                }
+            }
+            
+            if (getIcon == false)
+            {
+                GameObject.Find("UI").transform.Find("GameOver").transform.gameObject.SetActive(true);
+            }
         }
     }
 }
