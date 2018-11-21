@@ -68,41 +68,41 @@ public class Countdown : MonoBehaviour
             uiText.text = "0.00";
             timer = 0.0f;
 
-            if (CardManager.boom == false)
+            if (CardManager.boom == false && Score.endingScore == 0)
             {
                 GameObject.Find("UI").transform.Find("Follower").transform.gameObject.SetActive(true);
-                Memumanager.Result[3] = true;
-                JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
-                File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                Menumanager.Result[3] = true;
+                JsonData ResultJson = JsonMapper.ToJson(Menumanager.Result);
+                File.WriteAllText(Application.dataPath + "/Resources/ResultData.json", ResultJson.ToString());
                 getIcon = true;
             }
 
             else
             {
-                if (CardManager.playCard == 0 && GameManager.combo == true)
+                if (CardManager.playCard == 0 && GameManager.combo == true && Score.endingScore > 300)
                 {
                     GameObject.Find("UI").transform.Find("Saviour").transform.gameObject.SetActive(true);
-                    Memumanager.Result[0] = true;
-                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
-                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    Menumanager.Result[0] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Menumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultData.json", ResultJson.ToString());
                     getIcon = true;
                 }
 
-                else if (CardManager.playCard == 0)
+                else if (CardManager.playCard == 0 && Score.endingScore > 200)
                 {
                     GameObject.Find("UI").transform.Find("Friend").transform.gameObject.SetActive(true);
-                    Memumanager.Result[1] = true;
-                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
-                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    Menumanager.Result[1] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Menumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultData.json", ResultJson.ToString());
                     getIcon = true;
                 }
 
-                else if (GameManager.combo == true)
+                else if (GameManager.combo == true && Score.endingScore > 150)
                 {
                     GameObject.Find("UI").transform.Find("Impeccable").transform.gameObject.SetActive(true);
-                    Memumanager.Result[2] = true;
-                    JsonData ResultJson = JsonMapper.ToJson(Memumanager.Result);
-                    File.WriteAllText(Application.dataPath + "/Resources/ResultDate.json", ResultJson.ToString());
+                    Menumanager.Result[2] = true;
+                    JsonData ResultJson = JsonMapper.ToJson(Menumanager.Result);
+                    File.WriteAllText(Application.dataPath + "/Resources/ResultData.json", ResultJson.ToString());
                     getIcon = true;
                 }
             }

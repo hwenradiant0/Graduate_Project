@@ -6,6 +6,7 @@ using TMPro;
 
 public class Score : MonoBehaviour {
 
+    public static int endingScore = 0;
     public static int scoreValue = 0;
 
     Text scoreText;

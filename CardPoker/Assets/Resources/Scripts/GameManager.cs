@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public bool tutorial;
     
     public void OffTutorial() { tutorial = false; startgame = true; ResetScore(); }
-    public void ResetScore() { Score.scoreValue = 0; MultipleScore.multipleValue = 1; combo = true;}
+    public void ResetScore() { Score.scoreValue = 0; MultipleScore.multipleValue = 1; combo = true; CardManager.boom = false; }
     public void GoTime() { Time.timeScale = 1.0f; }
 
     public bool xState, yState, zState;

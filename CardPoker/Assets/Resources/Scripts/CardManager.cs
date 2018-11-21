@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RTS_Cam;
+using LitJson;
+using System.IO;
 
 public class Card
 {
@@ -268,6 +270,7 @@ public class CardManager : MonoBehaviour
                     ControlCube(2);
                     checkItem();
                     MultipleScore.multipleValue = 2;
+                    Score.endingScore += difscore;
                 }
 
                 else if (Cubes.Count > 2)
@@ -294,6 +297,7 @@ public class CardManager : MonoBehaviour
                         ControlCube(3);
                         checkItem();
                         MultipleScore.multipleValue = 3;
+                        Score.endingScore += difscore;
                     }
                 }
             }
@@ -318,6 +322,7 @@ public class CardManager : MonoBehaviour
                     ControlCube(2);
                     checkItem();
                     MultipleScore.multipleValue = 2;
+                    Score.endingScore += difscore;
                 }
 
                 if (Cubes.Count > 2)
@@ -348,11 +353,14 @@ public class CardManager : MonoBehaviour
                                 ControlCube(3);
                                 checkItem();
                                 MultipleScore.multipleValue = 3;
+                                Score.endingScore += difscore;
                             }
                         }
                     }
                 }
             }
         }
+
+        Debug.Log(Score.endingScore);
     }
 }
