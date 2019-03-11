@@ -49,14 +49,14 @@ public class Message2 : MonoBehaviour {
             case 4:
                 GameObject.Find("Tutorial").transform.Find("Q").gameObject.SetActive(true);//qw
                 GameObject.Find("Tutorial").transform.Find("R").gameObject.SetActive(false);
-                script.text = "그리고 Q와 W는 짝수 카드가 배치되며, ";
+                script.text = "그리고 Q와 W는 홀수 카드가 배치되며, ";
                 break;
             case 5:
                 GameObject.Find("Tutorial").transform.Find("E").gameObject.SetActive(true);
                 GameObject.Find("Tutorial").transform.Find("R").gameObject.SetActive(true);
                 GameObject.Find("Tutorial").transform.Find("Q").gameObject.SetActive(false);//er
                 GameObject.Find("Tutorial").transform.Find("W").gameObject.SetActive(false);
-                script.text = "W와 R은 하트 카드가 배치됩니다.";
+                script.text = "E와 R은 짝수 카드가 배치됩니다.";
                 break;
             case 6:
                 script.text = "그럼 이제 카드를 직접 배치해보겠습니다.";

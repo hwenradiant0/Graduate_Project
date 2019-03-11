@@ -12,7 +12,7 @@ public class Countdown : MonoBehaviour
 
     Image timeBar;
     float maxTime = 100.0f;
-
+    int score;
 
     private void OnEnable()
     {
@@ -68,7 +68,7 @@ public class Countdown : MonoBehaviour
             uiText.text = "0.00";
             timer = 0.0f;
 
-            if (CardManager.boom == false && Score.endingScore == 0)
+            if (CardManager.boom == false && Score.scoreValue == 0 && CardManager.playCard > 10)
             {
                 GameObject.Find("UI").transform.Find("Follower").transform.gameObject.SetActive(true);
                 Menumanager.Result[3] = true;
@@ -79,7 +79,7 @@ public class Countdown : MonoBehaviour
 
             else
             {
-                if (CardManager.playCard == 0 && GameManager.combo == true && Score.endingScore > 300)
+                if (CardManager.playCard == 0 && GameManager.combo == true && Score.scoreValue > 300)
                 {
                     GameObject.Find("UI").transform.Find("Saviour").transform.gameObject.SetActive(true);
                     Menumanager.Result[0] = true;
@@ -88,7 +88,7 @@ public class Countdown : MonoBehaviour
                     getIcon = true;
                 }
 
-                else if (CardManager.playCard == 0 && Score.endingScore > 200)
+                else if (CardManager.playCard == 0 && Score.scoreValue > 200)
                 {
                     GameObject.Find("UI").transform.Find("Friend").transform.gameObject.SetActive(true);
                     Menumanager.Result[1] = true;
@@ -97,7 +97,7 @@ public class Countdown : MonoBehaviour
                     getIcon = true;
                 }
 
-                else if (GameManager.combo == true && Score.endingScore > 150)
+                else if (GameManager.combo == true && Score.scoreValue > 150)
                 {
                     GameObject.Find("UI").transform.Find("Impeccable").transform.gameObject.SetActive(true);
                     Menumanager.Result[2] = true;
@@ -111,6 +111,16 @@ public class Countdown : MonoBehaviour
             {
                 GameObject.Find("UI").transform.Find("GameOver").transform.gameObject.SetActive(true);
             }
+
+            if (Score.scoreValue > score)       // 현재 스코어 저장
+            {
+                int[] jsonscore = { Score.scoreValue };
+                JsonData ResultScore = JsonMapper.ToJson(jsonscore);
+                File.WriteAllText(Application.dataPath + "/Resources/EndingScoreData.json", ResultScore.ToString());
+                BestScore.scoreValue = Score.scoreValue;
+            }
+            else
+                BestScore.scoreValue = score;
         }
     }
 }

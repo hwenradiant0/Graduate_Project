@@ -9,7 +9,7 @@ public class SwitchAnim : MonoBehaviour {
 
     [Header("SETTINGS")]
     [Tooltip("IMPORTANT! EVERY SWITCH MUST HAVE A DIFFERENT ID")]
-    public int switchID = 0;
+    public int switchID;
     public bool isOn;
     public bool saveValue;
 
@@ -25,31 +25,7 @@ public class SwitchAnim : MonoBehaviour {
 
     void Start ()
 	{
-        if (isOn == true)
-        {
-            switchAnimator.Play(onTransition);
-        }
-
-        else
-        {
-            switchAnimator.Play(offTransition);
-        }
-
         playerPrefsHelper = PlayerPrefs.GetInt(switchID + "Switch");
-
-        if (playerPrefsHelper == 1)
-        {
-            OnEvents.Invoke();
-            switchAnimator.Play(onTransition);
-            isOn = true;
-        }
-
-        else
-        {
-            OffEvents.Invoke();
-            switchAnimator.Play(offTransition);
-            isOn = false;
-        }
     }
 
 	public void AnimateSwitch()

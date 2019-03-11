@@ -92,6 +92,7 @@ public class GameManager : MonoBehaviour
             OffTutorial();
 
         FloatingTextController.Initialize();
+        ItemTextController.Initialize();
         reSheffle = true;
     }
 
@@ -260,20 +261,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     IEnumerator OnUpdateRoutine()
     {
         processcoroutine = true;
 
         Keydownable = false;
-
+        
         GameObject.Find("UI").transform.Find("Filled").transform.gameObject.SetActive(false);
         GameObject.Find("UI").transform.Find("Circle Pie").transform.gameObject.SetActive(true);
         for (float i = 0; i < 5; i++)
         {
             yield return new WaitForSeconds(1);
         }
-
         GameObject.Find("UI").transform.Find("Circle Pie").transform.gameObject.SetActive(false);
         GameObject.Find("UI").transform.Find("Filled").transform.gameObject.SetActive(true);
         Keydownable = true;
@@ -288,7 +287,6 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
         GameObject.Find("UI").transform.Find("Blinder").transform.gameObject.SetActive(false);
-
     }
 
     public void ChangeLastItemInWDeck(Component image, Sprite[] cardImage)
@@ -320,6 +318,12 @@ public class GameManager : MonoBehaviour
 
     void Tutorial()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameObject.Find("Tutorial").transform.Find("IngameOptions").gameObject.SetActive(true);
+            Time.timeScale = 0.0f;
+        }
+
         if (GameObject.Find("Tutorial").transform.Find("FirstTutorial").gameObject.activeSelf == true)
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -682,8 +686,8 @@ public class GameManager : MonoBehaviour
             {
                 Ingame();
             }
-
-            Collision_Cube();
+            if(Keydownable == true)
+                Collision_Cube();
         }
     }
 }

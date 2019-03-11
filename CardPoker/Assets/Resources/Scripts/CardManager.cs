@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using RTS_Cam;
 using LitJson;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class Card
 {
@@ -16,6 +17,8 @@ public class Card
 public class CardManager : MonoBehaviour
 {
     List<Card> Cards = new List<Card>();
+
+    GameManager gamemanager;
 
     public void Resetcubesize() { Cubes[Cubes.Count - 1].transform.localScale = Cubes[0].transform.localScale; } // 전부 다 같은 사이즈로 바꾸는걸 고민해볼것. 사이즈가 바뀔때 이펙트 넣는것도 고려
 
@@ -31,15 +34,14 @@ public class CardManager : MonoBehaviour
     int numWhiteCard;
     public static int playCard;
     public static bool boom = false;
-
-    /*
+    
     private void Start()
     {
+        playCard = 0;
         FloatingTextController.Initialize();
         numItem = 0;
         numWhiteCard = 0;
     }
-    */
 
     public int numCube()
     {
@@ -226,8 +228,6 @@ public class CardManager : MonoBehaviour
 
     private void checkItem()
     {
-        Debug.Log("ItemGet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
         numItem = Random.Range(1,5);
 
         Debug.Log("item : " + numItem);
@@ -240,8 +240,15 @@ public class CardManager : MonoBehaviour
         {
             Cubes[i].transform.localPosition = new Vector3(Cubes[Cubes.Count - 1].transform.localPosition.x, Cubes[i].transform.localPosition.y, Cubes[Cubes.Count - 1].transform.localPosition.z);
         }
+
+        if (numItem == 2)
+            ItemTextController.CreateFloatingText("Accel!", Cubes[Cubes.Count - 1].transform);
+        if (numItem == 3)
+            ItemTextController.CreateFloatingText("Slow!", Cubes[Cubes.Count - 1].transform);
+        if (numItem == 4)
+            ItemTextController.CreateFloatingText("Defence!", Cubes[Cubes.Count - 1].transform);
     }
-    
+
     public void scoreCheck()
     {
         int num1, num2, num3;
